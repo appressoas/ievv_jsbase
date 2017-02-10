@@ -19,7 +19,7 @@ $ yarn add ievv_jsbase
 
 ## Docs
 
-1. Checkout this git repo.
+1. Clone a local copy of the https://github.com/appressoas/ievv_jsbase git repo.
 2. Run ``npm install`` or ``yarn`` (depending on your preferred package manager)
 3. Run ``npm run build-docs`` or ``yarn run build-docs`` (depending on your preferred package manager)
 4. Open ``built_docs/index.html`` in a browser.
