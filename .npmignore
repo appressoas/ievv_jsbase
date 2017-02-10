@@ -5,3 +5,6 @@ built_docs/
 config/
 yarn.lock
 **/__tests__/
+esdoc.json
+esdoc/
+*.tgz
