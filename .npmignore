@@ -3,3 +3,5 @@ source/
 built_docs/
 !lib/
 config/
+yarn.lock
+**/__tests__/
