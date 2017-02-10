@@ -1,0 +1,35 @@
+{
+  "destination": "built_docs",
+  "excludes": [
+    "__tests__.+$",
+    "__mocks__.+$"
+  ],
+  "includes": [
+    "\\.(js|es6|jsx)$"
+  ],
+  "index": "esdoc/index.md",
+  "manual": {
+    "tutorial": [
+      "esdoc/manual/tutorial.md"
+    ]
+  },
+  "plugins": [
+    {
+      "name": "esdoc-importpath-plugin",
+      "option": {
+        "replaces": [
+          {
+            "from": "^javascript/",
+            "to": ""
+          },
+          {
+            "from": "^ievv_jsbase/",
+            "to": ""
+          }
+        ]
+      }
+    }
+  ],
+  "source": "scripts/javascript",
+  "title": "ievv_jsbase"
+}

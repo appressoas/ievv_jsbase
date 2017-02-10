@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "htmlparser2": "^3.9.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-core": "^6.20.0",
+    "babel-jest": "^17.0.2",
+    "babel-loader": "^6.2.8",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
+    "esdoc": "^0.4.8",
+    "esdoc-importpath-plugin": "^0.0.1",
+    "jest": "^17.0.2"
+  },
+  "jest": {
+    "transform": {
+      ".*": "./config/jest/transform.js"
+    }
+  },
+  "license": "BSD-3-Clause",
+  "main": "distribution/ievv_jsbase_core.js",
+  "name": "ievv_jsbase",
+  "scripts": {
+    "build-docs": "esdoc -c esdoc.json",
+    "test": "jest --no-cache",
+    "test-debug": "jest --debug",
+    "test-watch": "jest --watch"
+  },
+  "version": "1.0.0"
+}
