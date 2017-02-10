@@ -1,3 +1,4 @@
-distribution/
+lib/
 node_modules/
 .idea/
+built_docs/

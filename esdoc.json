@@ -19,17 +19,13 @@
       "option": {
         "replaces": [
           {
-            "from": "^javascript/",
-            "to": ""
-          },
-          {
-            "from": "^ievv_jsbase/",
-            "to": ""
+            "from": "^source/",
+            "to": "lib/"
           }
         ]
       }
     }
   ],
-  "source": "scripts/javascript",
+  "source": "source",
   "title": "ievv_jsbase"
 }

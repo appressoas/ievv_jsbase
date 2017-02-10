@@ -16,15 +16,19 @@
   "jest": {
     "transform": {
       ".*": "./config/jest/transform.js"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/lib/"
+    ]
   },
   "license": "BSD-3-Clause",
-  "main": "distribution/ievv_jsbase_core.js",
   "name": "ievv_jsbase",
   "scripts": {
-    "build": "babel source --presets babel-preset-es2015 --out-dir distribution",
+    "build": "babel source --presets babel-preset-es2015 --out-dir lib",
+    "clean": "rm -rf lib built_docs",
     "build-docs": "esdoc -c esdoc.json",
-    "test": "jest --no-cache",
+    "test": "jest",
     "test-debug": "jest --debug",
     "test-watch": "jest --watch"
   },
