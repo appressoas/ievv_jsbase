@@ -2,3 +2,4 @@ source/
 .idea/
 built_docs/
 !lib/
+config/
