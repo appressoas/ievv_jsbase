@@ -1,4 +1,4 @@
-import HttpJsonRequest from '../../http/HttpJsonRequest';
+import HttpJsonRequest from '../HttpJsonRequest';
 import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
 
 

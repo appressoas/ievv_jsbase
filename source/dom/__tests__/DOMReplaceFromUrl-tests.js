@@ -1,4 +1,4 @@
-import DOMReplaceFromUrl from '../../dom/DOMReplaceFromUrl.js';
+import DOMReplaceFromUrl from '../DOMReplaceFromUrl.js';
 import HttpRequest from "../../http/HttpRequest";
 import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
 

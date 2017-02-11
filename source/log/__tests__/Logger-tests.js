@@ -1,5 +1,5 @@
-import Logger from "../../log/Logger";
-import LOGLEVEL from "../../log/loglevel";
+import Logger from "../Logger";
+import LOGLEVEL from "../loglevel";
 
 
 describe('Logger', () => {

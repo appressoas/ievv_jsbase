@@ -1,5 +1,5 @@
-import LOGLEVEL from "../../log/loglevel";
-import AbstractLogger from "../../log/AbstractLogger";
+import LOGLEVEL from "../loglevel";
+import AbstractLogger from "../AbstractLogger";
 
 
 class MockLogger extends AbstractLogger {

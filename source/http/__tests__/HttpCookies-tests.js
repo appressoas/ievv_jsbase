@@ -1,5 +1,5 @@
-import HttpCookies from '../../http/HttpCookies.js';
-import {HttpCookieNotFoundError} from '../../http/HttpCookies.js';
+import HttpCookies from '../HttpCookies.js';
+import {HttpCookieNotFoundError} from '../HttpCookies.js';
 
 
 describe('HttpCookies', () => {

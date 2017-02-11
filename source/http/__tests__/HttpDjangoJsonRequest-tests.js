@@ -1,4 +1,4 @@
-import HttpDjangoJsonRequest from '../../http/HttpDjangoJsonRequest';
+import HttpDjangoJsonRequest from '../HttpDjangoJsonRequest';
 import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
 
 

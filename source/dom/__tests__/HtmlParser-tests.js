@@ -1,4 +1,4 @@
-import HtmlParser from "../../dom/HtmlParser";
+import HtmlParser from "../HtmlParser";
 
 describe('HtmlParser', () => {
     it('HtmlParser().rootElements', () => {

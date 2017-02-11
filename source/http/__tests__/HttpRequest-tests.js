@@ -1,6 +1,6 @@
-import HttpRequest from '../../http/HttpRequest';
+import HttpRequest from '../HttpRequest';
 import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
-import QueryString from "../../http/QueryString";
+import QueryString from "../QueryString";
 
 
 describe('HttpRequest', () => {

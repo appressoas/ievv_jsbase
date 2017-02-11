@@ -1,4 +1,4 @@
-import AbstractWidget from "../../widget/AbstractWidget";
+import AbstractWidget from "../AbstractWidget";
 import HtmlParser from "../../dom/HtmlParser";
 
 

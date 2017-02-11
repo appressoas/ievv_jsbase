@@ -1,6 +1,6 @@
-import LoggerSingleton from "../../log/LoggerSingleton";
-import LOGLEVEL from "../../log/loglevel";
-import Logger from "../../log/Logger";
+import LoggerSingleton from "../LoggerSingleton";
+import LOGLEVEL from "../loglevel";
+import Logger from "../Logger";
 
 
 describe('LoggerSingleton', () => {

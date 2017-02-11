@@ -1,10 +1,10 @@
-import WidgetRegistrySingleton from "../../widget/WidgetRegistrySingleton";
-import {ElementIsNotWidgetError} from "../../widget/WidgetRegistrySingleton";
-import {InvalidWidgetAliasError} from "../../widget/WidgetRegistrySingleton";
-import AbstractWidget from "../../widget/AbstractWidget";
+import WidgetRegistrySingleton from "../WidgetRegistrySingleton";
+import {ElementIsNotWidgetError} from "../WidgetRegistrySingleton";
+import {InvalidWidgetAliasError} from "../WidgetRegistrySingleton";
+import AbstractWidget from "../AbstractWidget";
 import HtmlParser from "../../dom/HtmlParser";
-import {ElementHasNoWidgetInstanceIdError} from "../../widget/WidgetRegistrySingleton";
-import {ElementIsNotInitializedAsWidget} from "../../widget/WidgetRegistrySingleton";
+import {ElementHasNoWidgetInstanceIdError} from "../WidgetRegistrySingleton";
+import {ElementIsNotInitializedAsWidget} from "../WidgetRegistrySingleton";
 
 
 class MockWidget extends AbstractWidget {

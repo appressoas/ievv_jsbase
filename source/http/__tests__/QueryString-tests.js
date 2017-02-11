@@ -1,4 +1,4 @@
-import QueryString from '../../http/QueryString';
+import QueryString from '../QueryString';
 
 
 describe('QueryString', () => {

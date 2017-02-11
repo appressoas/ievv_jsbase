@@ -1,4 +1,4 @@
-import DOMReplace from '../../dom/DOMReplace.js';
+import DOMReplace from '../DOMReplace.js';
 
 
 describe('DOMReplace', () => {

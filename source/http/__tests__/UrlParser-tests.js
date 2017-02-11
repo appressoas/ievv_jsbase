@@ -1,5 +1,5 @@
-import QueryString from "../../http/QueryString";
-import {UrlParser} from "../../http/UrlParser";
+import QueryString from "../QueryString";
+import {UrlParser} from "../UrlParser";
 
 
 describe('UrlParser', () => {

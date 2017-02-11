@@ -1,4 +1,4 @@
-import DOMReplaceWithSameElementFromUrl from '../../dom/DOMReplaceWithSameElementFromUrl.js';
+import DOMReplaceWithSameElementFromUrl from '../DOMReplaceWithSameElementFromUrl.js';
 import HttpRequest from "../../http/HttpRequest";
 import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
 
