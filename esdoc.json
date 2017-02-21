@@ -21,6 +21,14 @@
           {
             "from": "^source/",
             "to": "lib/"
+          },
+          {
+            "from": ".jsx",
+            "to": ""
+          },
+          {
+            "from": ".js",
+            "to": ""
           }
         ]
       }
