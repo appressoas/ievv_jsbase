@@ -8,7 +8,7 @@ let _instance = null;
  * A logging system.
  *
  * @example <caption>Create and use a logger</caption>
- * import LoggerSingleton from 'ievv_jsbase/log/LoggerSingleton';
+ * import LoggerSingleton from 'ievv_jsbase/lib/log/LoggerSingleton';
  * let mylogger = new LoggerSingleton().loggerSingleton.getLogger('myproject.MyClass');
  * mylogger.debug('Hello debug world');
  * mylogger.info('Hello info world');
@@ -16,12 +16,12 @@ let _instance = null;
  * mylogger.error('Hello error world');
  *
  * @example <caption>Set a default loglevel for all loggers</caption>
- * import LOGLEVEL from 'ievv_jsbase/log/loglevel';
+ * import LOGLEVEL from 'ievv_jsbase/lib/log/loglevel';
  * new LoggerSingleton().setDefaultLogLevel(LOGLEVEL.DEBUG);
  *
  * @example <caption>Set a custom loglevel for a single logger</caption>
- * import LOGLEVEL from 'ievv_jsbase/log/loglevel';
- * new LoggerSingleton().getLogger('mylogger').setLoglevel(LOGLEVEL.DEBUG);
+ * import LOGLEVEL from 'ievv_jsbase/lib/log/loglevel';
+ * new LoggerSingleton().getLogger('mylogger').setLogLevel(LOGLEVEL.DEBUG);
  */
 export default class LoggerSingleton {
     /**
