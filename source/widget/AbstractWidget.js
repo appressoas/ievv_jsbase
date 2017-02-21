@@ -41,7 +41,7 @@ import ObjectManager from "../utils/ObjectManager";
  *
  *     getDefaultConfig() {
  *          return {
- *              'menuId': 'id_main_menu';
+ *              'menuId': 'id_main_menu'
  *          }
  *     }
  *
