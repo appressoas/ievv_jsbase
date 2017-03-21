@@ -2,7 +2,6 @@ import CleanHtml from "../CleanHtml";
 import {FlatListCleanerNode} from "../CleanHtml";
 import {MergeIntoParentCleanerNode} from "../CleanHtml";
 
-
 describe('CleanHtml', () => {
     it('sanity', () => {
         const htmlCleaner = new CleanHtml();
@@ -204,4 +203,100 @@ describe('CleanHtml', () => {
     //     htmlCleaner.options.allowedTagsSet = ['ul', 'li'];
         // expect(htmlCleaner.clean('<p>This is</p>')).toEqual(expected);
     // });
+
+    it('normalizeEmptyTags remove empty p', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            remove: ['p']
+        };
+        expect(htmlCleaner.clean('<p></p>').toString()).toEqual('');
+    });
+
+    it('normalizeEmptyTags remove empty p at beginning', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            remove: ['p']
+        };
+        expect(htmlCleaner.clean('<p></p><p>hello</p>').toString()).toEqual('<p>hello</p>');
+    });
+
+    it('normalizeEmptyTags remove empty p at end', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            remove: ['p']
+        };
+        expect(htmlCleaner.clean('<p>hello</p><p></p>').toString()).toEqual('<p>hello</p>');
+    });
+
+    it('normalizeEmptyTags remove empty p in middle', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            remove: ['p']
+        };
+        expect(htmlCleaner.clean('<p>hello</p><p></p><p>goodbye</p>').toString()).toEqual('<p>hello</p><p>goodbye</p>');
+    });
+
+    it('normalizeEmptyTags fill empty p', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            fill: {
+                p: '<br>'
+            }
+        };
+        expect(htmlCleaner.clean('<p></p>').toString()).toEqual('<p><br></p>');
+    });
+
+    it('normalizeEmptyTags fill empty p at beginning', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            fill: {
+                p: '<br>'
+            }
+        };
+        expect(htmlCleaner.clean('<p></p><p>hello</p>').toString()).toEqual('<p><br></p><p>hello</p>');
+    });
+
+    it('normalizeEmptyTags fill empty p at end', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            fill: {
+                p: '<br>'
+            }
+        };
+        expect(htmlCleaner.clean('<p>hello</p><p></p>').toString()).toEqual('<p>hello</p><p><br></p>');
+    });
+
+    it('normalizeEmptyTags fill empty p and remove empty em', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'em'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            remove: ['em'],
+            fill: {
+                p: '<br>'
+            }
+        };
+        expect(htmlCleaner.clean('<p></p><em></em>').toString()).toEqual('<p><br></p>');
+    });
+
+    it('normalizeEmptyTags chaos scenario', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.wrapStandaloneInlineTagName = 'p';
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            fill: {
+                p: '<br>'
+            }
+        };
+
+        const testText = "Some text here<div><p><br></p><p>other text here</p></div>";
+        const expectedText = "<p>Some text here</p><p><br></p><p>other text here</p>";
+        expect(htmlCleaner.clean(testText).toString()).toEqual(expectedText);
+    });
 });

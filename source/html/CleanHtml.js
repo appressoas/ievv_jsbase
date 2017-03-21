@@ -1,6 +1,7 @@
 import htmlparser from "htmlparser2";
 import {makeHtmlStartTag, makeHtmlEndTag, isInlineTag} from "./utils";
 import TypeConvert from "../utils/TypeConvert";
+import ObjectManager from "../utils/ObjectManager";
 
 
 export class CleanerNode {
@@ -142,7 +143,23 @@ export class CleanerNode {
     }
 
     toHtml() {
-        return `${this.makeStartTag()}${this.childrenToHtml()}${this.makeEndTag(this.tagName)}`;
+        let html = `${this.makeStartTag()}${this.childrenToHtml()}${this.makeEndTag()}`;
+        if (ObjectManager.validate(this.options, 'normalizeEmptyTags')) {
+            const emptyTagHtml = `<${this.tagName}></${this.tagName}>`;
+            if(html == emptyTagHtml) {
+                if (ObjectManager.validate(this.options.normalizeEmptyTags, 'fill', this.tagName)) {
+                    const textToFillEmptyTag = this.options.normalizeEmptyTags.fill[this.tagName];
+                    return `<${this.tagName}>${textToFillEmptyTag}</${this.tagName}>`;
+                }
+                if (ObjectManager.validate(this.options.normalizeEmptyTags, 'remove')) {
+                    if (this.options.normalizeEmptyTags.remove.includes(this.tagName)) {
+                        return '';
+                    }
+                }
+            }
+        }
+
+        return html;
     }
 
     toString() {
@@ -263,7 +280,7 @@ class CleanHtmlOptions {
         this._tagNameToCleanerNodeClassMap = new Map();
         this.wrapStandaloneInlineTagName = null;
         this.wrapStandaloneInlineTagAttributes = {};
-
+        this.normalizeEmptyTags = null;
     }
 
     get allowedTagsSet() {
