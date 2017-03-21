@@ -143,18 +143,23 @@ export class CleanerNode {
     }
 
     toHtml() {
-        if (this.children.length == 0 && ObjectManager.validate(this.options, 'normalizeEmptyTags')) {
-            if (ObjectManager.validate(this.options.normalizeEmptyTags, 'fill', this.tagName)) {
-                const textToFillEmptyTag = this.options.normalizeEmptyTags.fill[this.tagName];
-                this.children.push(textToFillEmptyTag);
-            } else if (ObjectManager.validate(this.options.normalizeEmptyTags, 'remove')) {
-                if (this.options.normalizeEmptyTags.remove.includes(this.tagName)) {
-                    return '';
+        let html = `${this.makeStartTag()}${this.childrenToHtml()}${this.makeEndTag()}`;
+        if (ObjectManager.validate(this.options, 'normalizeEmptyTags')) {
+            const emptyTagHtml = `<${this.tagName}></${this.tagName}>`;
+            if(html == emptyTagHtml) {
+                if (ObjectManager.validate(this.options.normalizeEmptyTags, 'fill', this.tagName)) {
+                    const textToFillEmptyTag = this.options.normalizeEmptyTags.fill[this.tagName];
+                    return `<${this.tagName}>${textToFillEmptyTag}</${this.tagName}>`;
+                }
+                if (ObjectManager.validate(this.options.normalizeEmptyTags, 'remove')) {
+                    if (this.options.normalizeEmptyTags.remove.includes(this.tagName)) {
+                        return '';
+                    }
                 }
             }
         }
 
-        return `${this.makeStartTag()}${this.childrenToHtml()}${this.makeEndTag(this.tagName)}`;
+        return html;
     }
 
     toString() {

@@ -284,4 +284,19 @@ describe('CleanHtml', () => {
         };
         expect(htmlCleaner.clean('<p></p><em></em>').toString()).toEqual('<p><br></p>');
     });
+
+    it('normalizeEmptyTags chaos scenario', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.wrapStandaloneInlineTagName = 'p';
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        htmlCleaner.options.normalizeEmptyTags = {
+            fill: {
+                p: '<br>'
+            }
+        };
+
+        const testText = "Some text here<div><p><br></p><p>other text here</p></div>";
+        const expectedText = "<p>Some text here</p><p><br></p><p>other text here</p>";
+        expect(htmlCleaner.clean(testText).toString()).toEqual(expectedText);
+    });
 });

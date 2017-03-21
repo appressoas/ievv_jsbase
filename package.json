@@ -26,6 +26,7 @@
   "name": "ievv_jsbase",
   "scripts": {
     "build": "babel source --presets babel-preset-es2015 --out-dir lib",
+    "build-watch": "babel source --presets babel-preset-es2015 --watch --out-dir lib",
     "clean": "rm -rf lib built_docs",
     "build-docs": "esdoc -c esdoc.json",
     "test": "jest",
