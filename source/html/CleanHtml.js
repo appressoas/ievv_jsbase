@@ -1,6 +1,7 @@
 import htmlparser from "htmlparser2";
 import {makeHtmlStartTag, makeHtmlEndTag, isInlineTag} from "./utils";
 import TypeConvert from "../utils/TypeConvert";
+import ObjectManager from "../utils/ObjectManager";
 
 
 export class CleanerNode {
@@ -142,6 +143,17 @@ export class CleanerNode {
     }
 
     toHtml() {
+        if (this.children.length == 0 && ObjectManager.validate(this.options, 'normalizeEmptyTags')) {
+            if (ObjectManager.validate(this.options.normalizeEmptyTags, 'fill', this.tagName)) {
+                const textToFillEmptyTag = this.options.normalizeEmptyTags.fill[this.tagName];
+                this.children.push(textToFillEmptyTag);
+            } else if (ObjectManager.validate(this.options.normalizeEmptyTags, 'remove')) {
+                if (this.options.normalizeEmptyTags.remove.includes(this.tagName)) {
+                    return '';
+                }
+            }
+        }
+
         return `${this.makeStartTag()}${this.childrenToHtml()}${this.makeEndTag(this.tagName)}`;
     }
 
@@ -263,7 +275,7 @@ class CleanHtmlOptions {
         this._tagNameToCleanerNodeClassMap = new Map();
         this.wrapStandaloneInlineTagName = null;
         this.wrapStandaloneInlineTagAttributes = {};
-
+        this.normalizeEmptyTags = null;
     }
 
     get allowedTagsSet() {
