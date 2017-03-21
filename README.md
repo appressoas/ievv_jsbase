@@ -23,3 +23,21 @@ $ yarn add ievv_jsbase --dev
 2. Run ``npm install`` or ``yarn`` (depending on your preferred package manager)
 3. Run ``npm run build-docs`` or ``yarn run build-docs`` (depending on your preferred package manager)
 4. Open ``built_docs/index.html`` in a browser.
+
+
+## Release a new version
+(for people with publish permissions for the npm package)
+
+1. Build:
+
+   ```
+   $ yarn run build
+   ```
+2. Update the ``version`` in ``package.json``.
+3. ``npm publish``.
+4. Git commit the changes. The commit should be
+   ``Release <version>``
+   where ``<version>`` is the same version as you used in (2).
+5. ``git tag <version>`` where ``<version>`` is the same version as
+   you used in (2).
+6. ``git push && git push --tags``.
