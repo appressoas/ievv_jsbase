@@ -6,7 +6,7 @@ import QueryString from "./QueryString";
  *
  * @example
  * const urlparser = new UrlParser('http://example.com/api/people?name=Jane');
- * querystring.queryString.set('search', 'doe');
+ * urlparser.queryString.set('search', 'doe');
  * // urlparser.buildUrl() === 'http://example.com/api/people?name=Jane&search=doe'
  */
 export class UrlParser {
