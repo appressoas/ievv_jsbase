@@ -2,10 +2,15 @@ import htmlparser from "htmlparser2";
 import {makeHtmlStartTag, makeHtmlEndTag, isInlineTag} from "./utils";
 import TypeConvert from "../utils/TypeConvert";
 import ObjectManager from "../utils/ObjectManager";
+import typeDetect from "../utils/typeDetect";
 
 
 export class CleanerNode {
-    constructor(options, parentNode, tagName, attributes={}) {
+    constructor(options, parentNode, rootNode, preservePasteMarker, tagName, attributes={}) {
+        this.pasteMarkerAttribute = 'data-ievv-paste-marker';
+        this.preservePasteMarker = preservePasteMarker;
+        this.pasteMarkerNode = null;
+        this.rootNode = rootNode ? rootNode : this;
         this._inlineWrapperNode = null;
         this.options = options;
         this.parentNode = parentNode;
@@ -14,6 +19,123 @@ export class CleanerNode {
         this.tagName = this.cleanTagName();
         this.attributes = this.cleanAttributes();
         this.children = [];
+        this.pasteLevels = {
+            root: 0,
+            block: 1,
+            inline: 2
+        };
+    }
+
+    getPasteLevel() {
+      if (this.isRootNode()) {
+        return this.pasteLevels.root;
+      }
+      if (isInlineTag(this.tagName)) {
+        return this.pasteLevels.inline;
+      }
+      return this.pasteLevels.block;
+    }
+
+    getPasteMarkerLevel() {
+        return this.rootNode.pasteMarkerNode.parentNode.getPasteLevel();
+    }
+
+    getDeepestPasteLevelInTree() {
+        let pasteLevel = this.getPasteLevel();
+        for (let child of this.children) {
+            if (pasteLevel == this.pasteLevels.inline) {
+                return pasteLevel; // Returning because already at deepest possible level.. no need to iterate further..
+            }
+            if (typeDetect(child) == 'object') {
+                const childPasteLevel = child.getDeepestPasteLevelInTree();
+                if (childPasteLevel > pasteLevel) {
+                    pasteLevel = childPasteLevel;
+                }
+            }
+        }
+        return pasteLevel;
+    }
+
+    insertNodeAtPasteMarker(node) {
+        if (typeDetect(node) == 'string') {
+            this.rootNode.pasteMarkerNode.parentNode.addChildNodeAtIndex(
+                this.rootNode.pasteMarkerNode.getParentChildListIndex(), node);
+            return;
+        }
+        console.log("Attempting to get deepest paste level in tree, for node: ", node);
+        const pasteLevelOfNewNode = node.getDeepestPasteLevelInTree();
+        while (this.getPasteMarkerLevel() > pasteLevelOfNewNode) {
+           this.splitAtPasteMarker();
+        }
+
+        node.parentNode = this.rootNode.pasteMarkerNode.parentNode;
+        this.rootNode.pasteMarkerNode.parentNode.addChildNodeAtIndex(
+            this.rootNode.pasteMarkerNode.getParentChildListIndex(), node);
+        const [newMarkerParent, newMarkerIndex] = node.getLastPositionInNodeTree();
+        this.movePasteMarkerTo(newMarkerParent, newMarkerIndex+1);
+    }
+
+    getLastPositionInNodeTree() {
+        let parentNode = null, currentNode = this.rootNode;
+        while (currentNode.children.length > 0 &&
+               typeDetect(currentNode.children[currentNode.children.length-1]) == 'object') {
+            currentNode = currentNode.children[currentNode.children.length-1];
+        }
+        return [currentNode, currentNode.children.length-1];
+    }
+
+    splitAtPasteMarker() {
+        if (!this.rootNode.pasteMarkerNode) {
+            throw new Error("Cannot split at pasteMarker! pasteMarker is not set!");
+        }
+        if (this.rootNode.pasteMarkerNode.parentNode.isRootNode()) {
+            throw new Error("Cannot split at pasteMarker! pasteMarker is placed at root!");
+        }
+        this.rootNode.pasteMarkerNode.splitParentAfterMe();
+        this.movePasteMarkerTo(
+            this.rootNode.pasteMarkerNode.parentNode.parentNode,
+            this.rootNode.pasteMarkerNode.parentNode.getParentChildListIndex());
+    }
+
+    movePasteMarkerTo(node, index) {
+        const previousParent = this.rootNode.pasteMarkerNode.parentNode;
+        const previousParentIndex = this.rootNode.pasteMarkerNode.getParentChildListIndex();
+        previousParent.children.splice(previousParentIndex, 1);
+        this.rootNode.pasteMarkerNode.parentNode = node;
+        node.addChildNodeAtIndex(index, this.rootNode.pasteMarkerNode);
+    }
+
+    getParentChildListIndex() {
+        if (!this.parentNode) {
+            throw new Error("Cannot get parentChildListIndex. Has no parent.");
+        }
+        return this.parentNode.children.indexOf(this);
+    }
+
+    splitAfterChildIndex(index) {
+        if (index >= this.children.length) {
+            throw new Error(`Cannot split children at index ${index}, children.length: ${this.children.length}`);
+        }
+
+        const newSiblingNode = new CleanerNode(
+          this.options, this.parentNode, this.rootNode,
+          this.preservePasteMarker, this.tagName, this.attributes);
+        newSiblingNode.children = this.children.slice(index);
+        for (let child of newSiblingNode.children) {
+            if (typeDetect(child) == 'object') {
+                child.parentNode = newSiblingNode;
+            }
+        }
+        this.children = this.children.slice(0, index);
+        this.parentNode.addChildNodeAtIndex(this.getParentChildListIndex()+1, newSiblingNode);
+    }
+
+    splitParentAfterMe() {
+        this.parentNode.splitAfterChildIndex(this.getParentChildListIndex());
+    }
+
+    addChildNodeAtIndex(index, node) {
+        this.children.splice(index, 0, node);
     }
 
     getClosestParentWithTagName(tagName) {
@@ -36,7 +158,7 @@ export class CleanerNode {
 
     cleanTagName() {
         const tagName = this.transformTagName();
-        if(tagName != null && this.options.allowedTagsSet.has(tagName)) {
+        if((tagName != null && this.options.allowedTagsSet.has(tagName)) || this.isSpecialNode()) {
             return tagName;
         }
         return null;
@@ -45,7 +167,7 @@ export class CleanerNode {
     cleanAttributes() {
         const cleanedAttributes = {};
         for(let attributeName of Object.keys(this.originalAttributes)) {
-            if(this.options.isAllowedAttributeForTagName(this.tagName, attributeName)) {
+            if(this.options.isAllowedAttributeForTagName(this.tagName, attributeName) || this.isSpecialNode()) {
                 cleanedAttributes[attributeName] = this.originalAttributes[attributeName];
             }
         }
@@ -82,12 +204,47 @@ export class CleanerNode {
     makeChildNode(tagName, attributes) {
         const cleanerNodeClass = this.options.getCleanerNodeClassForTagName(tagName);
         return new cleanerNodeClass(
-            this.options, this,
+            this.options, this, this.rootNode, this.preservePasteMarker,
             tagName, attributes);
     }
 
     isInlineTag() {
         return isInlineTag(this.tagName);
+    }
+
+    isRootNode() {
+      return this.parentNode == null;
+    }
+
+    isPasteMarker() {
+        if (this.originalAttributes.hasOwnProperty(this.pasteMarkerAttribute)) {
+            if (this.isRootNode()) {
+                throw new Error("the rootnode cannot be the paste marker-node!");
+            }
+            this.rootNode.setPasteMarkerNode(this);
+            return true;
+        }
+        return false;
+    }
+
+    setPasteMarkerNode(node) {
+      this.pasteMarkerNode = node;
+    }
+
+    /**
+     * Special nodes are nodes like the paste-marker. If the cleaner is configured for it, these nodes should not be
+     * cleaned or altered in any way.
+     *
+     * @returns {boolean} if true, the current node is a special node, as such, any attributes is legal and any tagname is legal.
+     */
+    isSpecialNode() {
+        if (this.preservePasteMarker && this.isPasteMarker()) {
+            return true;
+        }
+
+        // Add if-tests for other special nodes here if any are added...
+
+        return false;
     }
 
     addChildNode(node) {
@@ -106,6 +263,9 @@ export class CleanerNode {
     }
 
     shouldRenderTag() {
+        if (this.isSpecialNode()) {
+            return true;
+        }
         if(this.tagName == null) {
             return false;
         }
@@ -196,8 +356,6 @@ export class FlatListCleanerNode extends NoTextCleanerNode {
 }
 
 
-
-
 /*
 Handle paste:
 
@@ -214,10 +372,10 @@ Handle &nbsp; (should be removed)
 - Know where we are cleaning.
 
 */
-
 export class CleanHtmlParser {
-    constructor(html, options) {
+    constructor(html, options, preservePasteMarker) {
         this.options = options;
+        this.preservePasteMarker = preservePasteMarker;
         this._parse(html);
         if(this._isWrappingStandaloneInline) {
             this.endWrappingStandaloneInline();
@@ -228,6 +386,8 @@ export class CleanHtmlParser {
         this._rootNode = new this.options.rootCleanerNodeClass(
             this.options,
             null,  // parentNode
+            null,  // rootNode
+            this.preservePasteMarker,
             this.options.rootCleanerNodeTagName,
             this.options.rootCleanerNodeAttributes);
         this._currentNode = this._rootNode;
@@ -266,8 +426,7 @@ export class CleanHtmlParser {
 }
 
 
-
-class CleanHtmlOptions {
+export class CleanHtmlOptions {
     constructor() {
         this._allowedTagsSet = new Set();
         this._allowedAttributesMap = new Map();
@@ -401,20 +560,77 @@ export default class CleanHtml {
         return html;
     }
 
-    _clean(html) {
-        return new CleanHtmlParser(html, this.options).rootNode.toHtml();
+    _getCleanedTree(html, preservePasteMarker) {
+        return new CleanHtmlParser(html, this.options, preservePasteMarker);
+    }
+
+    _clean(html, preservePasteMarker) {
+        return this._getCleanedTree(html, preservePasteMarker).rootNode.toHtml();
     }
 
     /**
      * Clean the provided html.
      *
      * @param {string} html The HTML to clean.
+     * @param preservePasteMarker {boolean} if true, leave the tag with `data-ievv-paste-marker` attribute.
      * @returns {string} The cleaned HTML.
      */
-    clean(html) {
+    clean(html, preservePasteMarker=false) {
         let cleanedHtml = this.preClean(html);
-        cleanedHtml = this._clean(cleanedHtml);
+        cleanedHtml = this._clean(cleanedHtml, preservePasteMarker);
         cleanedHtml = this.postClean(cleanedHtml);
         return cleanedHtml;
+    }
+
+    /**
+     * This function takes two html-blobs, `originalHtml` is the original text, `pastedHtml` is text to be inserted in
+     * `originalHtml`.
+     * The original html-blob should contain a 'marker-element' determining where to paste the given `pastedHtml`. This
+     * marker element should have the data-attribute `data-ievv-paste-marker`. If multiple marker-elements are present,
+     * an error will be logged, and `pastedHtml` will be inserted at the first one.
+     *
+     * Note: result from these examples will be cleaned once more using default cleaner, so if the cleaner is configured
+     * to wrap standalone text the standalone text in e.g. example 1 would be wrapped in some block-level tag before returning.
+     *
+     * @example <caption>1 - pasting unformatted text without marker:</caption>
+     * originalHtml: <p>Hello world! I am some text</p>
+     * pastedHtml: awesome
+     * result: <p>Hello world! I am some text</p>awesome
+     *
+     * @example <caption>2 - pasting formatted text without marker:</caption>
+     * originalHtml: <p>Hello world! I am some text</p>
+     * pastedHtml: <strong>awesome</strong>
+     * result: <p>Hello world! I am some text</p><strong>awesome</strong>
+     *
+     * @example <caption>3 - pasting unformatted text with marker:</caption>
+     * originalHtml: <p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>
+     * pastedHtml: awesome
+     * result: <p>Hello world! I am some awesome<span data-ievv-paste-marker></span>text</p>
+     *
+     * @example <caption>4 - pasting formatted text with marker:</caption>
+     * originalHtml: <p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>
+     * pastedHtml: <strong>awesome</strong>
+     * result: <p>Hello world! I am some <strong>awesome</strong><span data-ievv-paste-marker></span>text</p>
+     *
+     * @example <caption>5 - pasting block tag with marker:</caption>
+     * originalHtml: <p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>
+     * pastedHtml: <p>awesome</p>
+     * result: <p>Hello world! I am some </p>
+     *         <p>awesome</p>
+     *         <p><span data-ievv-paste-marker></span>text</p>
+     *
+     * @example <caption>5 - pasting formatted text in formatting with marker:</caption>
+     * originalHtml: <p>Hello world! I am <strong>some <span data-ievv-paste-marker></span>text</strong></p>
+     * pastedHtml: <strong>awesome</strong>
+     * result: <p>Hello world! I am <strong>some </strong><strong>awesome</strong><strong><span data-ievv-paste-marker></span>text</strong></p>
+     *
+     * @param originalHtml
+     * @param pastedHtml
+     */
+    paste(originalHtml, pastedHtml) {
+        const cleanedPastedTree = this._getCleanedTree(pastedHtml);
+        const cleanedOriginalTree = this._getCleanedTree(originalHtml, true);
+        cleanedOriginalTree.rootNode.insertNodeAtPasteMarker(cleanedPastedTree.rootNode);
+        return this.clean(cleanedOriginalTree.rootNode.toHtml(), true);
     }
 }

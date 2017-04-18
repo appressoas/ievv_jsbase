@@ -1,6 +1,8 @@
 import CleanHtml from "../CleanHtml";
 import {FlatListCleanerNode} from "../CleanHtml";
-import {MergeIntoParentCleanerNode} from "../CleanHtml";
+import {MergeIntoParentCleanerNode} from "../CleanHtml"
+import {CleanerNode} from "../CleanHtml";
+import {CleanHtmlOptions} from "../CleanHtml";
 
 describe('CleanHtml', () => {
     it('sanity', () => {
@@ -299,4 +301,91 @@ describe('CleanHtml', () => {
         const expectedText = "<p>Some text here</p><p><br></p><p>other text here</p>";
         expect(htmlCleaner.clean(testText).toString()).toEqual(expectedText);
     });
+
+    it('does not remove paste-marker when asked to keep it', () => {
+        const htmlCleaner = new CleanHtml();
+        const testText = "Hello <span data-ievv-paste-marker></span> world";
+        const expectedText = "Hello <span data-ievv-paste-marker=\"\"></span> world";
+        expect(htmlCleaner.clean(testText, true).toString()).toEqual(expectedText);
+    });
+
+    it('removes paste-marker when not asked to keep it', () => {
+        const htmlCleaner = new CleanHtml();
+        const testText = "Hello <span data-ievv-paste-marker></span> world";
+        const expectedText = "Hello  world";
+        expect(htmlCleaner.clean(testText, false).toString()).toEqual(expectedText);
+    });
+
+    it('splits node correctly at index', () => {
+        const options = new CleanHtmlOptions();
+        options.allowedTagsSet = ['p', 'div'];
+        const rootNode = new CleanerNode(options, null, null, false, 'div', {});
+        const outerPTag = new CleanerNode(options, rootNode, rootNode, false, 'p', {});
+        rootNode.addChildNode(outerPTag);
+        outerPTag.addText("Hello world! ");
+        outerPTag.addText("How are you?");
+
+        expect(rootNode.toHtml()).toEqual("<div><p>Hello world! How are you?</p></div>");
+        outerPTag.splitAfterChildIndex(1);
+        expect(rootNode.toHtml()).toEqual("<div><p>Hello world! </p><p>How are you?</p></div>");
+    });
+
+    it('splits node at paste-marker', () => {
+        const options = new CleanHtmlOptions();
+        options.allowedTagsSet = ['p', 'div'];
+        const rootNode = new CleanerNode(options, null, null, true, 'div', {});
+        const outerPTag = new CleanerNode(options, rootNode, rootNode, true, 'p', {});
+        rootNode.addChildNode(outerPTag);
+        const pasteMarkerNode = new CleanerNode(options, outerPTag, rootNode, true, 'span', {'data-ievv-paste-marker': ''});
+        rootNode.setPasteMarkerNode(pasteMarkerNode);
+        outerPTag.addText("Hello world! ");
+        outerPTag.addChildNode(pasteMarkerNode);
+        outerPTag.addText("How are you?");
+        expect(rootNode.toHtml())
+            .toEqual("<div><p>Hello world! <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
+        outerPTag.splitAtPasteMarker();
+        expect(rootNode.toHtml())
+            .toEqual("<div><p>Hello world! </p><span data-ievv-paste-marker=\"\"></span><p>How are you?</p></div>");
+    });
+
+    it('insert unwrapped text just before paste marker works', () => {
+        const options = new CleanHtmlOptions();
+        options.allowedTagsSet = ['p', 'div'];
+        const rootNode = new CleanerNode(options, null, null, true, 'div', {});
+        const outerPTag = new CleanerNode(options, rootNode, rootNode, true, 'p', {});
+        rootNode.addChildNode(outerPTag);
+        const pasteMarkerNode = new CleanerNode(options, outerPTag, rootNode, true, 'span', {'data-ievv-paste-marker': ''});
+        rootNode.setPasteMarkerNode(pasteMarkerNode);
+        outerPTag.addText("Hello world! ");
+        outerPTag.addChildNode(pasteMarkerNode);
+        outerPTag.addText("How are you?");
+        expect(rootNode.toHtml())
+            .toEqual("<div><p>Hello world! <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
+        outerPTag.insertNodeAtPasteMarker("I am some code. ");
+        expect(rootNode.toHtml())
+            .toEqual("<div><p>Hello world! I am some code. <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
+    });
+
+    it('insert nodes at marker, and moves marker to end of inserted content', () => {
+      const options = new CleanHtmlOptions();
+      options.allowedTagsSet = ['p', 'div'];
+      const rootNode = new CleanerNode(options, null, null, true, 'div', {});
+      const outerPTag = new CleanerNode(options, rootNode, rootNode, true, 'p', {});
+      rootNode.addChildNode(outerPTag);
+      const pasteMarkerNode = new CleanerNode(options, outerPTag, rootNode, true, 'span', {'data-ievv-paste-marker': ''});
+      rootNode.setPasteMarkerNode(pasteMarkerNode);
+      outerPTag.addText("Hello world! ");
+      outerPTag.addChildNode(pasteMarkerNode);
+      outerPTag.addText("How are you?");
+
+      const pastedPTag = new CleanerNode(options, null, null, true, 'p', {});
+      pastedPTag.addText("I am some code. ");
+
+      expect(rootNode.toHtml())
+        .toEqual("<div><p>Hello world! <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
+      outerPTag.insertNodeAtPasteMarker(pastedPTag);
+      expect(rootNode.toHtml())
+        .toEqual("<div><p>Hello world! </p><p>I am some code. <span data-ievv-paste-marker=\"\"></span></p><p>How are you?</p></div>");
+    });
+    // it('paste clean text in existing ')
 });
