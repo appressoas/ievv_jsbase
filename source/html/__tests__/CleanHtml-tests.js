@@ -402,12 +402,30 @@ describe('CleanHtml', () => {
         expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
     });
 
-    it('pasting block tag with marker', () => {
+    it('pasting single same block tag with marker', () => {
         const htmlCleaner = new CleanHtml();
         htmlCleaner.options.allowedTagsSet = ['p'];
         const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
         const pastedText = "<p>awesome</p>";
-        const expectedText = "<p>Hello world! I am some </p><p>awesome<span data-ievv-paste-marker=\"\"></span></p><p>text</p>";
+        const expectedText = "<p>Hello world! I am some awesome<span data-ievv-paste-marker=\"\"></span>text</p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting different block tag with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'h3'];
+        const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
+        const pastedText = "<h3>awesome</h3>";
+        const expectedText = "<p>Hello world! I am some </p><h3>awesome<span data-ievv-paste-marker=\"\"></span></h3><p>text</p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting multiple block tag with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'h3'];
+        const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
+        const pastedText = "<p>really</p><p>awesome</p>";
+        const expectedText = "<p>Hello world! I am some </p><p>really</p><p>awesome<span data-ievv-paste-marker=\"\"></span></p><p>text</p>";
         expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
     });
 

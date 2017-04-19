@@ -57,12 +57,27 @@ export class CleanerNode {
         return pasteLevel;
     }
 
+    getBlockNodeForNode(node) {
+      if (node.tagName != null && !isInlineTag(node.tagName)) {
+        return [true, node.tagName];
+      }
+      if (!node.isRootNode()) {
+        return this.getBlockNodeForNode(node.parentNode);
+      }
+      return [false, null];
+    }
+
     checkIfNodeIsJustStringAndExtractString(node) {
         if (typeDetect(node) == 'string') {
             return [true, node];
         }
-        if (node.tagName == null && node.children.length == 1 && typeDetect(node.children[0]) == 'string') {
-            return [true, node.children[0]];
+        if (node.tagName == null && node.children.length == 1) {
+            return this.checkIfNodeIsJustStringAndExtractString(node.children[0]);
+        }
+
+        const [pasteMarkerInBlockTag, pasteMarkerBlockTag] = this.getBlockNodeForNode(this.rootNode.pasteMarkerNode);
+        if (pasteMarkerInBlockTag && pasteMarkerBlockTag == node.tagName && node.children.length == 1) {
+            return this.checkIfNodeIsJustStringAndExtractString(node.children[0]);
         }
         return [false, null];
     }
@@ -81,7 +96,6 @@ export class CleanerNode {
         // console.log("This node is not a string: ", node);
         // console.log("Got rootNode: ", this.rootNode);
         const pasteLevelOfNewNode = node.getDeepestPasteLevelInTree();
-        console.log(`pasteLevelOfNewNode: ${pasteLevelOfNewNode}`);
         while (this.getPasteMarkerLevel() >= pasteLevelOfNewNode) {
            this.splitAtPasteMarker();
         }
@@ -649,7 +663,7 @@ export default class CleanHtml {
         const cleanedPastedTree = this._getCleanedTree(pastedHtml);
         const cleanedOriginalTree = this._getCleanedTree(originalHtml, true);
 
-        // console.log(`Running paste.\nCleaned original tree: ${cleanedOriginalTree.rootNode.toHtml()}\ncleanedPastedTree: ${cleanedPastedTree.rootNode.toHtml()}`);
+        // console.log(`Running paste.\n\nCleaned original tree: ${cleanedOriginalTree.rootNode.toHtml()}\n\ncleanedPastedTree: ${cleanedPastedTree.rootNode.toHtml()}`);
         // console.log(`cleanedOriginalTree.rootNode: `, cleanedOriginalTree.rootNode);
         // console.log(`cleanedPastedTree.rootNode: `, cleanedPastedTree.rootNode);
 
@@ -665,7 +679,6 @@ export default class CleanHtml {
             }
         }
 
-        // return this.clean(cleanedOriginalTree.rootNode.toHtml(), true);
-        return cleanedOriginalTree.rootNode.toHtml();
+        return this.clean(cleanedOriginalTree.rootNode.toHtml(), true);
     }
 }
