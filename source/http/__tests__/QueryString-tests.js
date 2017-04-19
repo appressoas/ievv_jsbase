@@ -18,18 +18,16 @@ describe('QueryString', () => {
         expect(querystring._queryStringMap.size).toBe(0);
     });
 
-    it('QueryString.set key not string', () => {
+    it('QueryString.set key not string coerced to string', () => {
         const querystring = new QueryString();
-        expect(() => querystring.set(10, 'a')).toThrowError(TypeError);
-        expect(() => querystring.set(10, 'a')).toThrowError(
-            'All keys added to a QueryString must be strings.');
+        querystring.set(10, 'a');
+        expect(querystring._queryStringMap.get(10)).toEqual(['a']);
     });
 
     it('QueryString.set value not string', () => {
         const querystring = new QueryString();
-        expect(() => querystring.set('a', 10)).toThrowError(TypeError);
-        expect(() => querystring.set('a', 10)).toThrowError(
-            'All values added to a QueryString must be strings.');
+        querystring.set('a', 10);
+        expect(querystring._queryStringMap.get('a')).toEqual([10]);
     });
 
     it('QueryString.set sanity', () => {
@@ -45,15 +43,16 @@ describe('QueryString', () => {
         expect(querystring._queryStringMap.get('a')).toEqual(['replaced']);
     });
 
-    it('QueryString.setIterable value not string', () => {
-        const querystring = new QueryString();
-        expect(() => querystring.set('a', ['10', 20])).toThrowError(TypeError);
-    });
-
     it('QueryString.setIterable sanity', () => {
         const querystring = new QueryString();
         querystring.setIterable('a', ['10', '20']);
         expect(querystring._queryStringMap.get('a')).toEqual(['10', '20']);
+    });
+
+    it('QueryString.setIterable value not string', () => {
+        const querystring = new QueryString();
+        querystring.setIterable('a', ['10', 20]);
+        expect(querystring._queryStringMap.get('a')).toEqual(['10', 20]);
     });
 
     it('QueryString.setIterable replaces existing', () => {
@@ -139,6 +138,12 @@ describe('QueryString', () => {
         expect(querystring.urlencode()).toEqual('name=Jane');
     });
 
+    it('QueryString.urlencode not strings', () => {
+        const querystring = new QueryString();
+        querystring.set(10, 20);
+        expect(querystring.urlencode()).toEqual('10=20');
+    });
+
     it('QueryString.urlencode empty', () => {
         const querystring = new QueryString();
         expect(querystring.urlencode()).toEqual('');
@@ -151,6 +156,14 @@ describe('QueryString', () => {
         const urlencodedSet = new Set(querystring.urlencode().split('&'));
         expect(urlencodedSet.size).toBe(2);
         expect(urlencodedSet).toEqual(new Set(['name=Jane', 'next=%2Fa%26b%2F']));
+    });
+
+    it('QueryString.urlencode iterable not strings', () => {
+        const querystring = new QueryString();
+        querystring.setIterable(10, [20, 30]);
+        const urlencodedSet = new Set(querystring.urlencode().split('&'));
+        expect(urlencodedSet.size).toBe(2);
+        expect(urlencodedSet).toEqual(new Set(['10=20', '10=30']));
     });
 
     it('QueryString.parse', () => {
