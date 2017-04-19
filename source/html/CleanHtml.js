@@ -3,6 +3,7 @@ import {makeHtmlStartTag, makeHtmlEndTag, isInlineTag} from "./utils";
 import TypeConvert from "../utils/TypeConvert";
 import ObjectManager from "../utils/ObjectManager";
 import typeDetect from "../utils/typeDetect";
+import {PasteMarkerNotSetError} from "./CleanHtmlErrors";
 
 
 export class CleanerNode {
@@ -27,13 +28,13 @@ export class CleanerNode {
     }
 
     getPasteLevel() {
-      if (this.isRootNode()) {
-        return this.pasteLevels.root;
-      }
-      if (isInlineTag(this.tagName)) {
-        return this.pasteLevels.inline;
-      }
-      return this.pasteLevels.block;
+        if (this.isRootNode()) {
+            return this.pasteLevels.root;
+        }
+        if (isInlineTag(this.tagName)) {
+            return this.pasteLevels.inline;
+        }
+        return this.pasteLevels.block;
     }
 
     getPasteMarkerLevel() {
@@ -56,15 +57,32 @@ export class CleanerNode {
         return pasteLevel;
     }
 
-    insertNodeAtPasteMarker(node) {
+    checkIfNodeIsJustStringAndExtractString(node) {
         if (typeDetect(node) == 'string') {
+            return [true, node];
+        }
+        if (node.tagName == null && node.children.length == 1 && typeDetect(node.children[0]) == 'string') {
+            return [true, node.children[0]];
+        }
+        return [false, null];
+    }
+
+    insertNodeAtPasteMarker(node) {
+        if (!this.rootNode.pasteMarkerNode) {
+            throw new PasteMarkerNotSetError("Cannot insert node at pasteMarker - aborting insertion");
+        }
+        let [isStringNode, stringValue] = this.checkIfNodeIsJustStringAndExtractString(node);
+        if (isStringNode) {
+            // console.log("This node is just a string: ", node);
             this.rootNode.pasteMarkerNode.parentNode.addChildNodeAtIndex(
-                this.rootNode.pasteMarkerNode.getParentChildListIndex(), node);
+                this.rootNode.pasteMarkerNode.getParentChildListIndex(), stringValue);
             return;
         }
-        console.log("Attempting to get deepest paste level in tree, for node: ", node);
+        // console.log("This node is not a string: ", node);
+        // console.log("Got rootNode: ", this.rootNode);
         const pasteLevelOfNewNode = node.getDeepestPasteLevelInTree();
-        while (this.getPasteMarkerLevel() > pasteLevelOfNewNode) {
+        console.log(`pasteLevelOfNewNode: ${pasteLevelOfNewNode}`);
+        while (this.getPasteMarkerLevel() >= pasteLevelOfNewNode) {
            this.splitAtPasteMarker();
         }
 
@@ -619,7 +637,7 @@ export default class CleanHtml {
      *         <p>awesome</p>
      *         <p><span data-ievv-paste-marker></span>text</p>
      *
-     * @example <caption>5 - pasting formatted text in formatting with marker:</caption>
+     * @example <caption>6 - pasting formatted text in formatting with marker:</caption>
      * originalHtml: <p>Hello world! I am <strong>some <span data-ievv-paste-marker></span>text</strong></p>
      * pastedHtml: <strong>awesome</strong>
      * result: <p>Hello world! I am <strong>some </strong><strong>awesome</strong><strong><span data-ievv-paste-marker></span>text</strong></p>
@@ -630,7 +648,24 @@ export default class CleanHtml {
     paste(originalHtml, pastedHtml) {
         const cleanedPastedTree = this._getCleanedTree(pastedHtml);
         const cleanedOriginalTree = this._getCleanedTree(originalHtml, true);
-        cleanedOriginalTree.rootNode.insertNodeAtPasteMarker(cleanedPastedTree.rootNode);
-        return this.clean(cleanedOriginalTree.rootNode.toHtml(), true);
+
+        // console.log(`Running paste.\nCleaned original tree: ${cleanedOriginalTree.rootNode.toHtml()}\ncleanedPastedTree: ${cleanedPastedTree.rootNode.toHtml()}`);
+        // console.log(`cleanedOriginalTree.rootNode: `, cleanedOriginalTree.rootNode);
+        // console.log(`cleanedPastedTree.rootNode: `, cleanedPastedTree.rootNode);
+
+        try {
+            cleanedOriginalTree.rootNode.insertNodeAtPasteMarker(cleanedPastedTree.rootNode);
+        } catch(e) {
+            if (e instanceof PasteMarkerNotSetError) {
+                const cleanedOriginalHtml = cleanedOriginalTree.rootNode.toHtml();
+                const cleanedPastedHtml = cleanedPastedTree.rootNode.toHtml();
+                return this.clean(`${cleanedOriginalHtml}${cleanedPastedHtml}`, true);
+            } else {
+                throw e;
+            }
+        }
+
+        // return this.clean(cleanedOriginalTree.rootNode.toHtml(), true);
+        return cleanedOriginalTree.rootNode.toHtml();
     }
 }

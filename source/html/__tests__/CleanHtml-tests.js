@@ -366,26 +366,57 @@ describe('CleanHtml', () => {
             .toEqual("<div><p>Hello world! I am some code. <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
     });
 
-    it('insert nodes at marker, and moves marker to end of inserted content', () => {
-      const options = new CleanHtmlOptions();
-      options.allowedTagsSet = ['p', 'div'];
-      const rootNode = new CleanerNode(options, null, null, true, 'div', {});
-      const outerPTag = new CleanerNode(options, rootNode, rootNode, true, 'p', {});
-      rootNode.addChildNode(outerPTag);
-      const pasteMarkerNode = new CleanerNode(options, outerPTag, rootNode, true, 'span', {'data-ievv-paste-marker': ''});
-      rootNode.setPasteMarkerNode(pasteMarkerNode);
-      outerPTag.addText("Hello world! ");
-      outerPTag.addChildNode(pasteMarkerNode);
-      outerPTag.addText("How are you?");
-
-      const pastedPTag = new CleanerNode(options, null, null, true, 'p', {});
-      pastedPTag.addText("I am some code. ");
-
-      expect(rootNode.toHtml())
-        .toEqual("<div><p>Hello world! <span data-ievv-paste-marker=\"\"></span>How are you?</p></div>");
-      outerPTag.insertNodeAtPasteMarker(pastedPTag);
-      expect(rootNode.toHtml())
-        .toEqual("<div><p>Hello world! </p><p>I am some code. <span data-ievv-paste-marker=\"\"></span></p><p>How are you?</p></div>");
+    it('pasting unformatted text without marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        const testText = "<p>Hello world! I am some text</p>";
+        const pastedText = "awesome";
+        const expectedText = "<p>Hello world! I am some text</p>awesome";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
     });
-    // it('paste clean text in existing ')
+
+    it('pasting formatted text without marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'strong'];
+        const testText = "<p>Hello world! I am some text</p>";
+        const pastedText = "<strong>awesome</strong>";
+        const expectedText = "<p>Hello world! I am some text</p><strong>awesome</strong>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting unformatted text with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
+        const pastedText = "awesome";
+        const expectedText = "<p>Hello world! I am some awesome<span data-ievv-paste-marker=\"\"></span>text</p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting formatted text with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'strong'];
+        const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
+        const pastedText = "<strong>awesome</strong>";
+        const expectedText = "<p>Hello world! I am some <strong>awesome<span data-ievv-paste-marker=\"\"></span></strong>text</p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting block tag with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p'];
+        const testText = "<p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>";
+        const pastedText = "<p>awesome</p>";
+        const expectedText = "<p>Hello world! I am some </p><p>awesome<span data-ievv-paste-marker=\"\"></span></p><p>text</p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
+
+    it('pasting formatted text in formatting with marker', () => {
+        const htmlCleaner = new CleanHtml();
+        htmlCleaner.options.allowedTagsSet = ['p', 'strong'];
+        const testText = "<p>Hello world! I am <strong>some <span data-ievv-paste-marker></span>text</strong></p>";
+        const pastedText = "<strong>awesome</strong>";
+        const expectedText = "<p>Hello world! I am <strong>some </strong><strong>awesome<span data-ievv-paste-marker=\"\"></span></strong><strong>text</strong></p>";
+        expect(htmlCleaner.paste(testText, pastedText).toString()).toEqual(expectedText);
+    });
 });
