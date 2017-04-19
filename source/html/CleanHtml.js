@@ -628,19 +628,19 @@ export default class CleanHtml {
      * @example <caption>4 - pasting formatted text with marker:</caption>
      * originalHtml: <p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>
      * pastedHtml: <strong>awesome</strong>
-     * result: <p>Hello world! I am some <strong>awesome</strong><span data-ievv-paste-marker></span>text</p>
+     * result: <p>Hello world! I am some <strong>awesome<span data-ievv-paste-marker></span></strong>text</p>
      *
      * @example <caption>5 - pasting block tag with marker:</caption>
      * originalHtml: <p>Hello world! I am some <span data-ievv-paste-marker></span>text</p>
      * pastedHtml: <p>awesome</p>
      * result: <p>Hello world! I am some </p>
-     *         <p>awesome</p>
-     *         <p><span data-ievv-paste-marker></span>text</p>
+     *         <p>awesome<span data-ievv-paste-marker></span></p>
+     *         <p>text</p>
      *
      * @example <caption>6 - pasting formatted text in formatting with marker:</caption>
      * originalHtml: <p>Hello world! I am <strong>some <span data-ievv-paste-marker></span>text</strong></p>
      * pastedHtml: <strong>awesome</strong>
-     * result: <p>Hello world! I am <strong>some </strong><strong>awesome</strong><strong><span data-ievv-paste-marker></span>text</strong></p>
+     * result: <p>Hello world! I am <strong>some </strong><strong>awesome<span data-ievv-paste-marker></span></strong><strong>text</strong></p>
      *
      * @param originalHtml
      * @param pastedHtml
