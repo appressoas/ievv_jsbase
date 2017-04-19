@@ -68,12 +68,6 @@ export default class QueryString {
     }
 
     _addToKey(key, value) {
-        if(typeof key !== 'string') {
-            throw new TypeError('All keys added to a QueryString must be strings.')
-        }
-        if(typeof value !== 'string') {
-            throw new TypeError('All values added to a QueryString must be strings.')
-        }
         this._queryStringMap.get(key).push(value);
     }
 
@@ -196,6 +190,8 @@ export default class QueryString {
     }
 
     _encodeKeyValue(key, value) {
+        key = `${key}`;
+        value = `${value}`;
         return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     }
 
