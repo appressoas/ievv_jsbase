@@ -10,6 +10,36 @@ import QueryString from "./QueryString";
  * // urlparser.buildUrl() === 'http://example.com/api/people?name=Jane&search=doe'
  */
 export class UrlParser {
+
+  /**
+   * Join URL paths.
+   *
+   * @example
+   * UrlParser.pathJoin('/test', 'user/')  // == '/test/user/'
+   * UrlParser.pathJoin('/test/', 'user/')  // == '/test/user/'
+   * UrlParser.pathJoin('/test/', '/user/')  // == '/test/user/'
+   * UrlParser.pathJoin('/test')  // == '/test'
+   * UrlParser.pathJoin('http://example.com/test/', '/user/', 10) // == http://example.com/test/user/10
+   *
+   * @param firstPath The first path. Can be an URL.
+   * @param paths Paths to join with the first path.
+   * @returns {string} The resulting path/url after joining.
+   */
+  static pathJoin(firstPath, ...paths) {
+    let outputPath = firstPath;
+    for(let path of paths) {
+      path = `${path}`;
+      if(outputPath.endsWith('/')) {
+        outputPath = outputPath.substring(0, outputPath.length - 1);
+      }
+      if(path.startsWith('/')) {
+        path = path.substring(1);
+      }
+      outputPath = `${outputPath}/${path}`;
+    }
+    return outputPath;
+  }
+
   constructor(url) {
     if(typeof url !== 'string') {
       throw new TypeError('url must be a string.');

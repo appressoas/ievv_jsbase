@@ -88,4 +88,14 @@ describe('UrlParser', () => {
     expect(urlparser.path).toBe('');
   });
 
+  it('pathJoin', () => {
+    expect(UrlParser.pathJoin('/')).toBe('/');
+    expect(UrlParser.pathJoin('/test', 'user/')).toBe('/test/user/');
+    expect(UrlParser.pathJoin('/test/', 'user/')).toBe('/test/user/');
+    expect(UrlParser.pathJoin('/test/', '/user/')).toBe('/test/user/');
+    expect(UrlParser.pathJoin('/test/', '/user/', 10)).toBe('/test/user/10');
+    expect(UrlParser.pathJoin('http://example.com/test/', '/user/', 10)).toBe(
+      'http://example.com/test/user/10');
+  });
+
 });
