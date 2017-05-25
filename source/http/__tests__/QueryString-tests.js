@@ -192,20 +192,14 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.get('names')).toEqual(['Jane', 'John']);
   });
 
-  it('QueryString.addValuesFromQueryString', () => {
-    const querystring = new QueryString();
-    querystring.set('name', 'test');
-    querystring.addValuesFromQueryString('name=test2&age=33');
-    expect(querystring._queryStringMap.get('name')).toEqual(['test', 'test2']);
-    expect(querystring._queryStringMap.get('age')).toEqual(['33']);
-  });
-
   it('QueryString.setValuesFromQueryString', () => {
     const querystring = new QueryString();
     querystring.set('name', 'test');
+    querystring.set('size', '10');
     querystring.setValuesFromQueryString('name=test2&age=33');
     expect(querystring._queryStringMap.get('name')).toEqual(['test2']);
     expect(querystring._queryStringMap.get('age')).toEqual(['33']);
+    expect(querystring._queryStringMap.get('size')).toEqual(['10']);
   });
 
 });

@@ -33,13 +33,13 @@ export default class QueryString {
    *
    * @param {string} querystring Optional input querystring to parse.
    */
-  constructor(querystring) {
+  constructor(querystring='') {
     this._queryStringMap = new Map();
-    if(typeof querystring !== 'undefined') {
+    if(querystring) {
       if(typeof querystring !== 'string') {
         throw new TypeError('The querystring argument must be a string.')
       }
-      this.setValuesFromQueryString(querystring);
+      this._parseQueryString(querystring);
     }
   }
 
@@ -85,40 +85,49 @@ export default class QueryString {
   }
 
   /**
-   * Add values from a querystring, like window.location.search.
+   * Set values from a querystring, like window.location.search.
    *
-   * This adds values to the QueryString object.
-   *
-   * If you have existing values in the QueryString objects,
-   * they will be extended with the new values.
-   *
-   * You may also want to check out {@link QueryString#setValuesFromQueryString}.
+   * Overwrites any key/value pairs currently in this object with keys in the
+   * provided ``querystring``.
    *
    * @example
-   * // window.location.search == "?name=test&age=12"
    * const querystring = new QueryString();
-   * querystring.set('name', 'test');
-   * querystring.addValuesFromQueryString('name=test2&age=33');
-   * // querystring.getArray('name') == ['test', 'test2']
-   * // querystring.getArray('age') == ['33']
+   * querystring.set('name', 'oldname');
+   * querystring.addValuesFromQueryString('name=newname&age=33');
+   * // querystring.get('name') == 'newname'
+   * // querystring.get('age') == '33'
    *
    * @param {string} querystring A querystring, like the one in window.location.search.
    *    Examples: ``"?a=10"``, ``"a=10"``, ``"a=10&s=test"``.
    */
-  addValuesFromQueryString(querystring) {
-    this._parseQueryString(querystring);
+  setValuesFromQueryString(querystring) {
+    this.merge(new this.constructor(querystring));
   }
 
   /**
-   * Just like {@link QueryString#addValuesFromQueryString}, except that this
-   * method calls {@link QueryString#clear} before calling
-   * {@link QueryString#addValuesFromQueryString} with the provided querystring.
+   * Merge {@link QueryString} objects into with this object.
    *
-   * @param {string} querystring See {@link QueryString#addValuesFromQueryString}.
+   * Overwrites any key/value pairs currently in this object with keys in the
+   * provided queryStringObjects in provided order, with the last
+   * one overwriting any preceding values.
+   *
+   * @example
+   * const querystring = new QueryString('name=oldname');
+   * querystring.merge(
+   *    new QueryString('name=newname1&age=33'),
+   *    new QueryString('name=newname2&size=large'));
+   * // querystring.get('name') == 'newname2'
+   * // querystring.get('age') == '33'
+   * // querystring.get('size') == 'large'
+   *
+   * @param queryStringObjects Zero or more {@link QueryString} objects.
    */
-  setValuesFromQueryString(querystring) {
-    this.clear();
-    this._parseQueryString(querystring);
+  merge(...queryStringObjects) {
+    for(let queryStringObject of queryStringObjects) {
+      for (let [key, value] of queryStringObject._queryStringMap) {
+        this._queryStringMap.set(key, value);
+      }
+    }
   }
 
   /**
