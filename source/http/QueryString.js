@@ -105,6 +105,54 @@ export default class QueryString {
   }
 
   /**
+   * Set values from an Object.
+   *
+   * Overwrites any key/value pairs currently in this QueryString
+   * with key/value pairs in the provided ``object``.
+   *
+   * @example
+   * const querystring = new QueryString();
+   * querystring.set('name', 'oldname');
+   * querystring.addValuesFromObject({
+   *   name: 'newname',
+   *   age: 33
+   * });
+   * // querystring.get('name') == 'newname'
+   * // querystring.get('age') == 33
+   *
+   * @param {Object} object An Object.
+   */
+  setValuesFromObject(object) {
+    for(let key of Object.keys(object)) {
+      this.set(key, object[key]);
+    }
+  }
+
+  /**
+   * Set values from a Map.
+   *
+   * Overwrites any key/value pairs currently in this QueryString
+   * with key/value pairs in the provided ``map``.
+   *
+   * @example
+   * const querystring = new QueryString();
+   * querystring.set('name', 'oldname');
+   * querystring.addValuesFromMap(new Map([
+   *   ['name', 'newname'],
+   *   ['age', 33]
+   * ]));
+   * // querystring.get('name') == 'newname'
+   * // querystring.get('age') == 33
+   *
+   * @param {Map} map A map.
+   */
+  setValuesFromMap(map) {
+    for(let [key, value] of map.entries()) {
+      this.set(key, value);
+    }
+  }
+
+  /**
    * Merge {@link QueryString} objects into with this object.
    *
    * Overwrites any key/value pairs currently in this object with keys in the

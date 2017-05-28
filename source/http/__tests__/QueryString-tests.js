@@ -202,4 +202,24 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.get('size')).toEqual(['10']);
   });
 
+  it('QueryString.setValuesFromObject', () => {
+    const querystring = new QueryString();
+    querystring.set('name', 'test');
+    querystring.set('size', '10');
+    querystring.setValuesFromObject({name: 'test2', age: 33});
+    expect(querystring._queryStringMap.get('name')).toEqual(['test2']);
+    expect(querystring._queryStringMap.get('age')).toEqual([33]);
+    expect(querystring._queryStringMap.get('size')).toEqual(['10']);
+  });
+
+  it('QueryString.setValuesFromMap', () => {
+    const querystring = new QueryString();
+    querystring.set('name', 'test');
+    querystring.set('size', '10');
+    querystring.setValuesFromMap(new Map([['name', 'test2'], ['age', 33]]));
+    expect(querystring._queryStringMap.get('name')).toEqual(['test2']);
+    expect(querystring._queryStringMap.get('age')).toEqual([33]);
+    expect(querystring._queryStringMap.get('size')).toEqual(['10']);
+  });
+
 });
