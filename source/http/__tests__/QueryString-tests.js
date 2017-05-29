@@ -166,6 +166,36 @@ describe('QueryString', () => {
     expect(urlencodedSet).toEqual(new Set(['10=20', '10=30']));
   });
 
+  it('QueryString.urlencode skipEmptyValues', () => {
+    const querystring = new QueryString();
+    querystring.set('name', '');
+    querystring.set('age', '33');
+    expect(querystring.urlencode({skipEmptyValues: true})).toEqual('age=33');
+  });
+
+  it('QueryString.urlencode sortKeys', () => {
+    const querystring = new QueryString();
+    querystring.set('name', 'Jane');
+    querystring.set('age', '33');
+    expect(querystring.urlencode({sortKeys: true})).toEqual('age=33&name=Jane');
+  });
+
+  it('QueryString.urlencode sortValues', () => {
+    const querystring = new QueryString();
+    querystring.setIterable('name', ['Jane', 'Amy', 'Xian']);
+    expect(querystring.urlencode({sortValues: true})).toEqual(
+      'name=Amy&name=Jane&name=Xian');
+  });
+
+  it('QueryString.urlencode sortKeys and sortValues', () => {
+    const querystring = new QueryString();
+    querystring.setIterable('name', ['Jane', 'Amy', 'Xian']);
+    querystring.setIterable('age', [33, 2, 66]);
+    expect(querystring.urlencode({sortKeys: true, sortValues: true})).toEqual(
+      'age=2&age=33&age=66&name=Amy&name=Jane&name=Xian');
+  });
+
+
   it('QueryString.parse', () => {
     const querystring = new QueryString('name=Jane');
     expect(querystring._queryStringMap.get('name')).toEqual(['Jane']);

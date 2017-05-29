@@ -307,11 +307,46 @@ export default class QueryString {
    * querystring.set('name', 'john');
    * let urlEncodedQuerystring = querystring.urlencode();
    * // urlEncodedQuerystring === 'name=john&next=%2Fa%26b%2F'  // order may vary
+   *
+   * @example <caption>Sort keys</caption>
+   * const querystring = QueryString();
+   * querystring.set('name', 'john');
+   * querystring.set('age', 33);
+   * let urlEncodedQuerystring = querystring.urlencode({sortKeys: true});
+   * // urlEncodedQuerystring === 'age=33&name=john'
+   *
+   * @example <caption>Sort values</caption>
+   * const querystring = QueryString();
+   * querystring.setIterable('name', ['john', 'amy', 'xion']);
+   * let urlEncodedQuerystring = querystring.urlencode();
+   * // urlEncodedQuerystring === 'name=amy&name=john&name=xion'
+   *
+   *
+   * @param {Object} options Options. All are optional
+   * @param {boolean} options.sortKeys Sort the keys using Array.sort? ``false`` by default.
+   * @param {boolean} options.sortValues Sort the values using Array.sort? ``false`` by default.
+   *    This only makes sense if you have keys with multiple values.
+   * @param {boolean} options.skipEmptyValues Skip empty values? ``false`` by default.
    */
-  urlencode() {
+  urlencode(options={}) {
+    const {sortKeys, sortValues, skipEmptyValues} = options
+    let keys = this._queryStringMap.keys()
+    if(sortKeys) {
+      keys = Array.from(keys)
+      keys.sort()
+    }
+
     let urlEncodedArray = [];
-    for(let [key, valueArray] of this._queryStringMap) {
+    for(let key of keys) {
+      let valueArray = this._queryStringMap.get(key);
+      if(sortValues) {
+        valueArray = Array.from(valueArray)
+        valueArray.sort()
+      }
       for(const value of valueArray) {
+        if(skipEmptyValues && `${value}` === '') {
+          continue
+        }
         urlEncodedArray.push(this._encodeKeyValue(key, value));
       }
     }
