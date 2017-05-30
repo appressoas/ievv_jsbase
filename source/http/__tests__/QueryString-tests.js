@@ -3,14 +3,14 @@ import QueryString from '../QueryString';
 
 describe('QueryString', () => {
 
-  it('QueryString.isEmpty()', () => {
+  it('isEmpty()', () => {
     const querystring = new QueryString();
     expect(querystring.isEmpty()).toBe(true);
     querystring._queryStringMap.set('a', ['value']);
     expect(querystring.isEmpty()).toBe(false);
   });
 
-  it('QueryString.clear()', () => {
+  it('clear()', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['value']);
     expect(querystring._queryStringMap.size).toBe(1);
@@ -18,92 +18,92 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.size).toBe(0);
   });
 
-  it('QueryString.set key not string coerced to string', () => {
+  it('set key not string coerced to string', () => {
     const querystring = new QueryString();
     querystring.set(10, 'a');
     expect(querystring._queryStringMap.get(10)).toEqual(['a']);
   });
 
-  it('QueryString.set value not string', () => {
+  it('set value not string', () => {
     const querystring = new QueryString();
     querystring.set('a', 10);
     expect(querystring._queryStringMap.get('a')).toEqual([10]);
   });
 
-  it('QueryString.set sanity', () => {
+  it('set sanity', () => {
     const querystring = new QueryString();
     querystring.set('a', '10');
     expect(querystring._queryStringMap.get('a')).toEqual(['10']);
   });
 
-  it('QueryString.set replaces existing', () => {
+  it('set replaces existing', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['10']);
     querystring.set('a', 'replaced');
     expect(querystring._queryStringMap.get('a')).toEqual(['replaced']);
   });
 
-  it('QueryString.setIterable sanity', () => {
+  it('setIterable sanity', () => {
     const querystring = new QueryString();
     querystring.setIterable('a', ['10', '20']);
     expect(querystring._queryStringMap.get('a')).toEqual(['10', '20']);
   });
 
-  it('QueryString.setIterable value not string', () => {
+  it('setIterable value not string', () => {
     const querystring = new QueryString();
     querystring.setIterable('a', ['10', 20]);
     expect(querystring._queryStringMap.get('a')).toEqual(['10', 20]);
   });
 
-  it('QueryString.setIterable replaces existing', () => {
+  it('setIterable replaces existing', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['10', '20']);
     querystring.setIterable('a', ['replaced']);
     expect(querystring._queryStringMap.get('a')).toEqual(['replaced']);
   });
 
-  it('QueryString.setIterable empty removes key', () => {
+  it('setIterable empty removes key', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['10']);
     querystring.setIterable('a', []);
     expect(querystring._queryStringMap.has('a')).toBe(false);
   });
 
-  it('QueryString.append new key', () => {
+  it('append new key', () => {
     const querystring = new QueryString();
     querystring.append('a', 'value');
     expect(querystring._queryStringMap.get('a')).toEqual(['value']);
   });
 
-  it('QueryString.append existing key', () => {
+  it('append existing key', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['value1', 'value2']);
     querystring.append('a', 'value3');
     expect(querystring._queryStringMap.get('a')).toEqual(['value1', 'value2', 'value3']);
   });
 
-  it('QueryString.get no matching key', () => {
+  it('get no matching key', () => {
     const querystring = new QueryString();
     expect(querystring.get('a')).toBeUndefined();
   });
 
-  it('QueryString.get no matching key fallback', () => {
+  it('get no matching key fallback', () => {
     const querystring = new QueryString();
     expect(querystring.get('a', 'thefallback')).toEqual('thefallback');
   });
 
-  it('QueryString.get', () => {
+  it('get', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['value']);
     expect(querystring.get('a')).toEqual('value');
   });
 
-  it('QueryString.remove key not in QueryString', () => {
+  it('remove key not in QueryString', () => {
     const querystring = new QueryString();
     querystring.remove('a');  // No Error
   });
 
-  it('QueryString.remove key in QueryString', () => {
+  it('remove key in QueryString', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['value']);
     expect(querystring.has('a')).toBe(true);
@@ -111,45 +111,45 @@ describe('QueryString', () => {
     expect(querystring.has('a')).toBe(false);
   });
 
-  it('QueryString.has key not in QueryString', () => {
+  it('has key not in QueryString', () => {
     const querystring = new QueryString();
     expect(querystring.has('a')).toBe(false);
   });
 
-  it('QueryString.has key in QueryString', () => {
+  it('has key in QueryString', () => {
     const querystring = new QueryString();
     querystring._queryStringMap.set('a', ['value']);
     expect(querystring.has('a')).toBe(true);
   });
 
-  it('QueryString._encodeKeyValue sanity', () => {
+  it('_encodeKeyValue sanity', () => {
     const querystring = new QueryString();
     expect(querystring._encodeKeyValue('name', 'Jane')).toEqual('name=Jane');
   });
 
-  it('QueryString._encodeKeyValue escapes value', () => {
+  it('_encodeKeyValue escapes value', () => {
     const querystring = new QueryString();
     expect(querystring._encodeKeyValue('next', '/a&b/')).toEqual('next=%2Fa%26b%2F');
   });
 
-  it('QueryString.urlencode', () => {
+  it('urlencode', () => {
     const querystring = new QueryString();
     querystring.set('name', 'Jane');
     expect(querystring.urlencode()).toEqual('name=Jane');
   });
 
-  it('QueryString.urlencode not strings', () => {
+  it('urlencode not strings', () => {
     const querystring = new QueryString();
     querystring.set(10, 20);
     expect(querystring.urlencode()).toEqual('10=20');
   });
 
-  it('QueryString.urlencode empty', () => {
+  it('urlencode empty', () => {
     const querystring = new QueryString();
     expect(querystring.urlencode()).toEqual('');
   });
 
-  it('QueryString.urlencode multiple', () => {
+  it('urlencode multiple', () => {
     const querystring = new QueryString();
     querystring.set('name', 'Jane');
     querystring.set('next', '/a&b/');
@@ -158,7 +158,7 @@ describe('QueryString', () => {
     expect(urlencodedSet).toEqual(new Set(['name=Jane', 'next=%2Fa%26b%2F']));
   });
 
-  it('QueryString.urlencode iterable not strings', () => {
+  it('urlencode iterable not strings', () => {
     const querystring = new QueryString();
     querystring.setIterable(10, [20, 30]);
     const urlencodedSet = new Set(querystring.urlencode().split('&'));
@@ -166,28 +166,28 @@ describe('QueryString', () => {
     expect(urlencodedSet).toEqual(new Set(['10=20', '10=30']));
   });
 
-  it('QueryString.urlencode skipEmptyValues', () => {
+  it('urlencode skipEmptyValues', () => {
     const querystring = new QueryString();
     querystring.set('name', '');
     querystring.set('age', '33');
     expect(querystring.urlencode({skipEmptyValues: true})).toEqual('age=33');
   });
 
-  it('QueryString.urlencode sortKeys', () => {
+  it('urlencode sortKeys', () => {
     const querystring = new QueryString();
     querystring.set('name', 'Jane');
     querystring.set('age', '33');
     expect(querystring.urlencode({sortKeys: true})).toEqual('age=33&name=Jane');
   });
 
-  it('QueryString.urlencode sortValues', () => {
+  it('urlencode sortValues', () => {
     const querystring = new QueryString();
     querystring.setIterable('name', ['Jane', 'Amy', 'Xian']);
     expect(querystring.urlencode({sortValues: true})).toEqual(
       'name=Amy&name=Jane&name=Xian');
   });
 
-  it('QueryString.urlencode sortKeys and sortValues', () => {
+  it('urlencode sortKeys and sortValues', () => {
     const querystring = new QueryString();
     querystring.setIterable('name', ['Jane', 'Amy', 'Xian']);
     querystring.setIterable('age', [33, 2, 66]);
@@ -196,33 +196,33 @@ describe('QueryString', () => {
   });
 
 
-  it('QueryString.parse', () => {
+  it('parse', () => {
     const querystring = new QueryString('name=Jane');
     expect(querystring._queryStringMap.get('name')).toEqual(['Jane']);
   });
 
-  it('QueryString.parse ignores leading ?', () => {
+  it('parse ignores leading ?', () => {
     const querystring = new QueryString('?name=Jane');
     expect(querystring._queryStringMap.get('name')).toEqual(['Jane']);
   });
 
-  it('QueryString.parse unescaped value', () => {
+  it('parse unescaped value', () => {
     const querystring = new QueryString('next=%2Fa%26b%2F');
     expect(querystring._queryStringMap.get('next')).toEqual(['/a&b/']);
   });
 
-  it('QueryString.parse multiple keys', () => {
+  it('parse multiple keys', () => {
     const querystring = new QueryString('name=Jane&age=33');
     expect(querystring._queryStringMap.get('name')).toEqual(['Jane']);
     expect(querystring._queryStringMap.get('age')).toEqual(['33']);
   });
 
-  it('QueryString.parse multiple values for same key', () => {
+  it('parse multiple values for same key', () => {
     const querystring = new QueryString('names=Jane&names=John');
     expect(querystring._queryStringMap.get('names')).toEqual(['Jane', 'John']);
   });
 
-  it('QueryString.setValuesFromQueryString', () => {
+  it('setValuesFromQueryString', () => {
     const querystring = new QueryString();
     querystring.set('name', 'test');
     querystring.set('size', '10');
@@ -232,7 +232,7 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.get('size')).toEqual(['10']);
   });
 
-  it('QueryString.setValuesFromObject', () => {
+  it('setValuesFromObject', () => {
     const querystring = new QueryString();
     querystring.set('name', 'test');
     querystring.set('size', '10');
@@ -242,7 +242,14 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.get('size')).toEqual(['10']);
   });
 
-  it('QueryString.setValuesFromMap', () => {
+  it('setValuesFromObject multiple values', () => {
+    const querystring = new QueryString();
+    querystring.set('names', 'test');
+    querystring.setValuesFromObject({names: ['test1', 'test2']});
+    expect(querystring._queryStringMap.get('names')).toEqual(['test1', 'test2']);
+  });
+
+  it('setValuesFromMap', () => {
     const querystring = new QueryString();
     querystring.set('name', 'test');
     querystring.set('size', '10');
@@ -252,4 +259,42 @@ describe('QueryString', () => {
     expect(querystring._queryStringMap.get('size')).toEqual(['10']);
   });
 
+  it('setValuesFromMap multiple values', () => {
+    const querystring = new QueryString();
+    querystring.set('names', 'test');
+    querystring.setValuesFromMap(new Map([['names', ['test1', 'test2']]]));
+    expect(querystring._queryStringMap.get('names')).toEqual(['test1', 'test2']);
+  });
+
+  it('setSmart string', () => {
+    const querystring = new QueryString();
+    querystring.setSmart('name', 'test');
+    expect(querystring._queryStringMap.get('name')).toEqual(['test']);
+  });
+
+  it('setSmart number', () => {
+    const querystring = new QueryString();
+    querystring.setSmart('age', 10);
+    expect(querystring._queryStringMap.get('age')).toEqual([10]);
+  });
+
+  it('setSmart boolean', () => {
+    const querystring = new QueryString();
+    querystring.setSmart('isActive', true);
+    expect(querystring._queryStringMap.get('isActive')).toEqual([true]);
+  });
+
+  it('setSmart array', () => {
+    const querystring = new QueryString();
+    querystring.setSmart('names', ['jane', 'peter']);
+    expect(querystring._queryStringMap.get('names')).toEqual(['jane', 'peter']);
+  });
+
+  it('setSmart set', () => {
+    const querystring = new QueryString();
+    querystring.setSmart('names', new Set(['jane', 'peter']));
+    expect(querystring._queryStringMap.get('names').length).toEqual(2);
+    expect(querystring._queryStringMap.get('names')).toEqual(
+      expect.arrayContaining(['jane', 'peter']));
+  });
 });

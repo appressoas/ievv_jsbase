@@ -28,6 +28,7 @@
  * querystring.setIterable('tags', ['male']);
  * // querystring.urlencode() === 'name=John&tags=male'
  */
+import typeDetect from '../utils/typeDetect'
 export default class QueryString {
   /**
    *
@@ -110,21 +111,27 @@ export default class QueryString {
    * Overwrites any key/value pairs currently in this QueryString
    * with key/value pairs in the provided ``object``.
    *
+   * Uses {@link QueryString#setSmart} to set the values, so
+   * the values of the map can be both simple types and
+   * iterables like arrays and sets.
+   *
    * @example
    * const querystring = new QueryString();
    * querystring.set('name', 'oldname');
    * querystring.addValuesFromObject({
    *   name: 'newname',
-   *   age: 33
+   *   age: 33,
+   *   tags: ['tag1', 'tag2']
    * });
    * // querystring.get('name') == 'newname'
    * // querystring.get('age') == 33
+   * // querystring.getArray('tags') == ['tag1', 'tag2']
    *
    * @param {Object} object An Object.
    */
   setValuesFromObject(object) {
     for(let key of Object.keys(object)) {
-      this.set(key, object[key]);
+      this.setSmart(key, object[key]);
     }
   }
 
@@ -134,21 +141,27 @@ export default class QueryString {
    * Overwrites any key/value pairs currently in this QueryString
    * with key/value pairs in the provided ``map``.
    *
+   * Uses {@link QueryString#setSmart} to set the values, so
+   * the values of the map can be both simple types and
+   * iterables like arrays and sets.
+   *
    * @example
    * const querystring = new QueryString();
    * querystring.set('name', 'oldname');
    * querystring.addValuesFromMap(new Map([
    *   ['name', 'newname'],
-   *   ['age', 33]
+   *   ['age', 33],
+   *   ['tags', ['tag1', 'tag2']]
    * ]));
    * // querystring.get('name') == 'newname'
    * // querystring.get('age') == 33
+   * // querystring.getArray('tags') == ['tag1', 'tag2']
    *
    * @param {Map} map A map.
    */
   setValuesFromMap(map) {
     for(let [key, value] of map.entries()) {
-      this.set(key, value);
+      this.setSmart(key, value);
     }
   }
 
@@ -214,6 +227,26 @@ export default class QueryString {
    */
   set(key, value) {
     this.setIterable(key, [value]);
+  }
+
+  /**
+   * Calls {@link QueryString#set} or {@link QueryString#setIterable} depending
+   * on the type of the provided value.
+   *
+   * @param {string} key The key to store the value as.
+   * @param {string|number|boolean|array|Set} value The value to set using
+   *    {@link QueryString#set} or {@link QueryString#setIterable} depending
+   *    on the type.
+   */
+  setSmart(key, value) {
+    const valueType = typeDetect(value)
+    if(valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      this.set(key, value)
+    } else if(valueType === 'array' || valueType === 'set') {
+      this.setIterable(key, value)
+    } else {
+      throw new Error(`Unsupporter value type: ${valueType}`)
+    }
   }
 
   /**
