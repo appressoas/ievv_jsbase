@@ -11,9 +11,9 @@ python libraries, and the commersial IEVV library.
 ## Install
 
 ```
-$ npm install ievv_jsbase --save-dev
+$ npm install ievv_jsbase
 .. or ..
-$ yarn add ievv_jsbase --dev
+$ yarn add ievv_jsbase
 ```
 
 
