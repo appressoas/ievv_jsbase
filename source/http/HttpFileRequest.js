@@ -12,7 +12,7 @@ export default class HttpFileRequest extends HttpRequest {
    * @returns {HttpFileResponse}
    */
   makeResponse () {
-    return HttpFileResponse(this.request)
+    return new HttpFileResponse(this.request)
   }
 
   /**
