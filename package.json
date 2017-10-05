@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "htmlparser2": "^3.9.2"
+    "htmlparser2": "^3.9.2",
+    "standard": "^10.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.22.2",
