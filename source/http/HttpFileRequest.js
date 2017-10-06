@@ -22,6 +22,5 @@ export default class HttpFileRequest extends HttpRequest {
   setDefaultRequestHeaders (method) {
     super.setDefaultRequestHeaders(method)
     this.setRequestHeader('Accept', 'multipart/form-data')
-    this.setRequestHeader('Content-Type', 'application/octet-stream')
   }
 }
