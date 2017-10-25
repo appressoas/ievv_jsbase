@@ -41,3 +41,18 @@ $ yarn add ievv_jsbase
 5. ``git tag <version>`` where ``<version>`` is the same version as
    you used in (2).
 6. ``git push && git push --tags``.
+
+
+## Release a new version on github
+
+1. Build:
+
+   ```
+   $ yarn run build
+   ```
+2. Update the ``version`` in ``package.json``.
+3. Git commit the changes. The commit should be ``Release <version>``
+   where ``<version>`` is the same version as you used in (2).
+4. ``git tag <version>`` where ``<version>`` is the same version as
+   you used in (2).
+5. ``git push && git push --tags``.
