@@ -14,7 +14,7 @@ if (!window.gettext) {
   window.gettext = function (msgid) {
     return msgid
   }
-  console.warning(
+  console.warn(
     'window.gettext is not defined. Patching window.gettext and related ' +
     'functions with noop fallbacks. ' +
     'Make sure you import/include a full gettext translation system like ' +
