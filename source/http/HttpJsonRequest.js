@@ -3,7 +3,18 @@ import HttpRequest from "./HttpRequest";
 
 
 /**
- * Extends HttpRequest with transparent JSON request/response handling.
+ * Extends {@link HttpRequest} with transparent JSON request/response handling.
+ *
+ * @example <caption>Make a GET request</caption>
+ * const request = new JsonHttpRequest('http://example.com/api/users/');
+ * request.urlParser.queryString.set('search', 'doe');
+ * request.get()
+ *     .then((response) => {
+ *         console.log('Success!', response.bodydata);
+ *     })
+ *     .catch((error) => {
+ *         console.error('Error:', error.toString());
+ *     });
  */
 export default class JsonHttpRequest extends HttpRequest {
     /**

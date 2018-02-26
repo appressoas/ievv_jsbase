@@ -1,9 +1,19 @@
-import HttpJsonRequest from "./HttpJsonRequest";
-import HttpCookies from "./HttpCookies";
+import HttpJsonRequest from './HttpJsonRequest'
+import HttpCookies from './HttpCookies'
 
 /**
- * Extends HttpJsonRequest with automatic handling
+ * Extends {@link HttpJsonRequest} with automatic handling
  * of the Django csrftoken.
+ *
+ * @example <caption>Make a POST request</caption>
+ * const request = new HttpDjangoJsonRequest('http://example.com/api/users/');
+ * request.post({'name': 'Peter Pan', 'age': 14})
+ *     .then((response) => {
+ *         console.log('Success!', response.bodydata);
+ *     })
+ *     .catch((error) => {
+ *         console.error('Error:', error.toString());
+ *     });
  */
 export default class HttpDjangoJsonRequest extends HttpJsonRequest {
   /**
