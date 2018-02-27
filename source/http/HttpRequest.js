@@ -59,6 +59,7 @@ export default class HttpRequest {
         if(typeof url !== 'undefined') {
             this.setUrl(url);
         }
+        this._extraRequestHeaders = new Map()
     }
 
     /**
@@ -121,6 +122,7 @@ export default class HttpRequest {
         return new Promise((resolve, reject) => {
             this.request.open(method, this.urlParser.buildUrl(), true);
             this.setDefaultRequestHeaders(method);
+            this._setExtraRequestHeaders();
             this.request.onload  = () => this._onComplete(resolve, reject);
             this.request.onerror = () => this._onComplete(resolve, reject);
             this.request.send(this.makeRequestBody(data));
@@ -211,7 +213,16 @@ export default class HttpRequest {
      * @param value The header value.
      */
     setRequestHeader(header, value) {
-        this.request.setRequestHeader(header, value);
+        this._extraRequestHeaders.set(header, value)
+    }
+
+    /**
+     * Iterates all headers added using {@link setRequestHeader} and adds them to request before it's executed.
+     */
+    _setExtraRequestHeaders() {
+        for (const [header, value] of this._extraRequestHeaders) {
+            this.request.setRequestHeader(header, value)
+        }
     }
 
     /**
