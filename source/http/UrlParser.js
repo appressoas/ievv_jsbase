@@ -61,6 +61,19 @@ export class UrlParser {
     }
   }
 
+  /**
+   * Create a deep copy of this UrlParser object.
+   *
+   * @return The copy.
+   */
+  deepCopy () {
+    let copy = Object.assign(Object.create(this), this)
+    if(this.queryString !== null) {
+      copy.queryString = this.queryString.deepCopy()
+    }
+    return copy
+  }
+
   _splitDomainAndPath(domainAndPath) {
     let split = domainAndPath.split('/');
     let domain = split.shift();

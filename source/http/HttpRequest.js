@@ -54,11 +54,31 @@ export default class HttpRequest {
    */
   constructor(url) {
     this._treatRedirectResponseAsError = true
-    this.request = new XMLHttpRequest()
+    this.requestHeaders = new Map()
+    this.request = null
     this._urlParser = null
     if(typeof url !== 'undefined') {
       this.setUrl(url)
     }
+  }
+
+  /**
+   * Create a deep copy of this HttpRequest object.
+   *
+   * WARNING: This does not copy request headers since those
+   * are set on the XMLHttpRequest object, and that object is
+   * reset in the copy.
+   *
+   * @return The copy.
+   */
+  deepCopy () {
+    let copy = Object.assign(Object.create(this), this)
+    copy.request = null
+    if (this._urlParser !== null) {
+      copy._urlParser = this._urlParser.deepCopy()
+    }
+    copy.requestHeaders = new Map(this.requestHeaders)
+    return copy
   }
 
   /**
@@ -96,6 +116,10 @@ export default class HttpRequest {
     this._treatRedirectResponseAsError = treatRedirectResponseAsError
   }
 
+  _makeXMLHttpRequest () {
+    return new XMLHttpRequest()
+  }
+
   /**
    * Send the request.
    *
@@ -103,7 +127,7 @@ export default class HttpRequest {
    * @param data Request body data. This is sent through
    *      {@link HttpRequest#makeRequestBody} before it
    *      is sent.*
-   * @return A Promise.
+   * @return {Promise} A Promise.
    *
    *      The resolve function argument is an
    *      an object of whatever {@link HttpRequest#makeResponse}
@@ -119,8 +143,10 @@ export default class HttpRequest {
       throw new TypeError('Can not call send() without an url.')
     }
     return new Promise((resolve, reject) => {
+      this.request = this._makeXMLHttpRequest()
       this.request.open(method, this.urlParser.buildUrl(), true)
       this.setDefaultRequestHeaders(method)
+      this._applyRequestHeadersToRequest()
       this.request.onload  = () => this._onComplete(resolve, reject)
       this.request.send(this.makeRequestBody(data))
     })
@@ -203,6 +229,12 @@ export default class HttpRequest {
     return new HttpResponse(this.request)
   }
 
+  _applyRequestHeadersToRequest () {
+    for (let [header, value] of this.requestHeaders) {
+      this.request.setRequestHeader(header, value)
+    }
+  }
+
   /**
    * Set a request header.
    *
@@ -210,7 +242,7 @@ export default class HttpRequest {
    * @param value The header value.
    */
   setRequestHeader(header, value) {
-    this.request.setRequestHeader(header, value)
+    this.requestHeaders.set(header, value)
   }
 
   /**

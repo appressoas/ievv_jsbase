@@ -1,3 +1,5 @@
+import typeDetect from '../utils/typeDetect'
+
 /**
  * Query-string creator and parser.
  *
@@ -28,7 +30,6 @@
  * querystring.setIterable('tags', ['male']);
  * // querystring.urlencode() === 'name=John&tags=male'
  */
-import typeDetect from '../utils/typeDetect'
 export default class QueryString {
   /**
    *
@@ -42,6 +43,17 @@ export default class QueryString {
       }
       this._parseQueryString(querystring);
     }
+  }
+
+  /**
+   * Create a deep copy of this QueryString object.
+   *
+   * @return The copy.
+   */
+  deepCopy () {
+    let copy = Object.assign(Object.create(this), this)
+    copy._queryStringMap = new Map(this._queryStringMap)
+    return copy
   }
 
   /**
