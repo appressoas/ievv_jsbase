@@ -34,5 +34,5 @@
     "test-debug": "jest --debug",
     "test-watch": "jest --watch"
   },
-  "version": "1.6.0"
+  "version": "1.5.5"
 }
