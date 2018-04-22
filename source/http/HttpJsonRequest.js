@@ -42,7 +42,7 @@ export default class JsonHttpRequest extends HttpRequest {
   setDefaultRequestHeaders(method) {
     super.setDefaultRequestHeaders(method)
     this.setRequestHeader('Accept', 'application/json')
-    this.setRequestHeader('Content-Type', 'application/json charset=UTF-8')
+    this.setRequestHeader('Content-Type', 'application/json; charset=UTF-8')
   }
 
   /**
