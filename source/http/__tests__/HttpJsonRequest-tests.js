@@ -1,93 +1,82 @@
-import HttpJsonRequest from '../HttpJsonRequest';
-import {XMLHttpRequestMock} from "../../__testhelpers__/XMLHttpRequestMock";
+import HttpJsonRequest from '../HttpJsonRequest'
+import HttpRequest from '../HttpRequest'
+import * as sinon from 'sinon'
 
+let server
 
 describe('HttpJsonRequest', () => {
-    it('Unsuccessful request that reached server', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 400
-        });
-        return httprequest.post('test').then(function(response) {
-            throw new Error('This should not be called!');
-        }, function(error) {
-            expect(error.response.status).toBe(400);
-            expect(error.response.isConnectionRefused()).toBe(false);
-        });
-    });
+  beforeEach(() => {
+    server = sinon.fakeServer.create()
+    server.respondImmediately = true
+  })
 
-    it('Unsuccessful request that did not reach server', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onerror', {
-            status: 0
-        });
-        return httprequest.post('test').then(function(response) {
-            throw new Error('This should not be called!');
-        }, function(error) {
-            expect(error.response.status).toBe(0);
-            expect(error.response.isConnectionRefused()).toBe(true);
-        });
-    });
+  afterEach(() => {
+    server.restore()
+  })
 
-    it('Successful request', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 200
-        });
-        return httprequest.post('test').then(function(response) {
-            expect(response.status).toBe(200);
-        }, function(error) {
-            throw new Error('This should not be called!');
-        });
-    });
+  it('Unsuccessful request that reached server', () => {
+    server.respondWith('POST', /\//, (request) => {
+      request.respond(400)
+    })
+    const httprequest = new HttpJsonRequest('/')
+    return httprequest.post('test').then(function(response) {
+      throw new Error('This should not be called!')
+    }, function (error) {
+      expect(error.response.status).toBe(400)
+      expect(error.response.isClientError()).toBe(true)
+    })
+  })
 
-    it('Successful request body', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 200,
-            responseText: 'test'
-        });
-        return httprequest.post('test').then(function(response) {
-            expect(response.body).toBe('test');
-        });
-    });
+  it('Successful request', () => {
+    server.respondWith('POST', /\//, (request) => {
+      request.respond(200)
+    })
+    const httprequest = new HttpJsonRequest('/')
+    return httprequest.post('test').then(function (response) {
+      expect(response.status).toBe(200)
+      expect(response.isSuccess()).toBe(true)
+    }, function (error) {
+      throw new Error(`This should not be called! ${error}`)
+    })
+  })
 
-    it('Successful request bodydata', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 200,
-            responseText: '{"a": 10}'
-        });
-        return httprequest.post('test').then(function(response) {
-            expect(response.bodydata.a).toBe(10);
-        });
-    });
+  it('Successful request body', () => {
+    server.respondWith('POST', /\//, (request) => {
+      request.respond(200)
+    })
+    const httprequest = new HttpJsonRequest('/')
+    return httprequest.post('test').then(function (response) {
+      expect(response.status).toBe(200)
+      expect(response.isSuccess()).toBe(true)
+    }, function (error) {
+      throw new Error(`This should not be called! ${error}`)
+    })
+  })
 
-    it('Sets content-type and Accept headers', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 200
-        });
-        return httprequest.post('test').then(function(response) {
-            expect(httprequest.request.headers.length).toBe(2);
-            expect(httprequest.request.headers[0].header).toBe(
-                'Accept');
-            expect(httprequest.request.headers[0].value).toBe(
-                'application/json');
-            expect(httprequest.request.headers[1].header).toBe(
-                'Content-Type');
-            expect(httprequest.request.headers[1].value).toBe(
-                'application/json; charset=UTF-8');
-        });
-    });
+  it('Successful request bodydata', () => {
+    server.respondWith('POST', /\//, (request) => {
+      request.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
+        a: 10
+      }))
+    })
+    const httprequest = new HttpJsonRequest('/')
+    return httprequest.post('test').then(function(response) {
+      expect(response.bodydata.a).toBe(10)
+    })
+  })
 
-    it('JSON encodes input data', () => {
-        const httprequest = new HttpJsonRequest('http://example.com/');
-        httprequest.request = new XMLHttpRequestMock('onload', {
-            status: 200
-        });
-        return httprequest.post({'a': 10}).then(function(response) {
-            expect(httprequest.request.sentData).toBe('{"a":10}');
-        });
-    });
-});
+  it('Sets content-type and Accept headers', () => {
+    server.respondWith('POST', /\//, (request) => {
+      request.respond(200)
+    })
+    const httprequest = new HttpJsonRequest('/')
+    return httprequest.post('test').then(function (response) {
+      expect(httprequest.requestHeaders.size).toBe(2)
+      expect(httprequest.requestHeaders.get('Accept')).toBe(
+        'application/json')
+      expect(httprequest.requestHeaders.get('Content-Type')).toBe(
+        'application/json; charset=UTF-8')
+    })
+  })
+
+})
