@@ -1,38 +1,35 @@
 {
   "dependencies": {
+    "@babel/cli": "^7.0.0-beta.47",
     "htmlparser2": "^3.9.2",
     "standard": "^10.0.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.22.2",
-    "babel-core": "^6.20.0",
-    "babel-jest": "^17.0.2",
-    "babel-loader": "^6.2.8",
+    "@babel/core": "^7.0.0-beta.47",
+    "@babel/preset-env": "^7.0.0-beta.47",
+    "babel-core": "^7.0.0-0",
+    "babel-jest": "^22.4.3",
     "babel-polyfill": "^6.16.0",
-    "babel-preset-es2015": "^6.18.0",
     "esdoc": "^0.4.8",
     "esdoc-importpath-plugin": "^0.0.1",
-    "jest": "^20.0.4"
-  },
-  "jest": {
-    "transform": {
-      ".*": "./config/jest/transform.js"
-    },
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/lib/"
-    ]
+    "jest": "^22.4.3",
+    "sinon": "^5.0.7"
   },
   "license": "BSD-3-Clause",
   "name": "ievv_jsbase",
   "scripts": {
-    "build": "babel source --presets babel-preset-es2015 --out-dir lib",
-    "build-watch": "babel source --presets babel-preset-es2015 --watch --out-dir lib",
+    "build": "babel source --out-dir lib",
+    "build-watch": "babel source --watch --out-dir lib",
     "clean": "rm -rf lib built_docs",
     "build-docs": "esdoc -c esdoc.json",
     "test": "jest",
     "test-debug": "jest --debug",
     "test-watch": "jest --watch"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
   },
   "version": "1.6.1"
 }
