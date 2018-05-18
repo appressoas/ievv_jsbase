@@ -2,8 +2,7 @@
   "dependencies": {
     "@babel/cli": "^7.0.0-beta.47",
     "@babel/polyfill": "^7.0.0-beta.47",
-    "htmlparser2": "^3.9.2",
-    "standard": "^10.0.3"
+    "htmlparser2": "^3.9.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.47",
@@ -13,7 +12,8 @@
     "esdoc": "^0.4.8",
     "esdoc-importpath-plugin": "^0.0.1",
     "jest": "^22.4.3",
-    "sinon": "^5.0.7"
+    "sinon": "^5.0.7",
+    "standard": "^11.0.1"
   },
   "license": "BSD-3-Clause",
   "name": "ievv_jsbase",
