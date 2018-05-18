@@ -1,12 +1,12 @@
 {
   "dependencies": {
     "@babel/cli": "^7.0.0-beta.47",
+    "@babel/polyfill": "^7.0.0-beta.47",
     "htmlparser2": "^3.9.2",
     "standard": "^10.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.47",
-    "@babel/polyfill": "^7.0.0-beta.47",
     "@babel/preset-env": "^7.0.0-beta.47",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^22.4.4",
