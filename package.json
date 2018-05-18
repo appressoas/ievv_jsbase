@@ -6,10 +6,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.47",
+    "@babel/polyfill": "^7.0.0-beta.47",
     "@babel/preset-env": "^7.0.0-beta.47",
     "babel-core": "^7.0.0-0",
-    "babel-jest": "^22.4.3",
-    "babel-polyfill": "^6.16.0",
+    "babel-jest": "^22.4.4",
     "esdoc": "^0.4.8",
     "esdoc-importpath-plugin": "^0.0.1",
     "jest": "^22.4.3",
