@@ -7,7 +7,7 @@ import ObjectManager from '../utils/ObjectManager'
  * Extends {@link HttpRequest} with transparent JSON request/response handling.
  *
  * @example <caption>Make a GET request</caption>
- * const request = new JsonHttpRequest('http://example.com/api/users/')
+ * const request = new HttpJsonRequest('http://example.com/api/users/')
  * request.urlParser.queryString.set('search', 'doe')
  * request.get()
  *     .then((response) => {
@@ -17,7 +17,7 @@ import ObjectManager from '../utils/ObjectManager'
  *         console.error('Error:', error.toString())
  *     })
  */
-export default class JsonHttpRequest extends HttpRequest {
+export default class HttpJsonRequest extends HttpRequest {
   /**
    * Overridden to automatically convert request data to JSON.
    */
@@ -57,13 +57,13 @@ export default class JsonHttpRequest extends HttpRequest {
    * just ensure the request is configured so that the page that would have
    * been retrieved if you just used ``get()`` would have been page 10.
    *
+   * @param {number} maxPages The max number of pages to load. If this is ``null``
+   *    (the default) we load all pages until the ``nextUrlAttribute`` value is ``null``
+   *    or ``undefined``.
    * @param {string} resultsAttribute The attribute in the response data that
    *    contains the results array. Defaults to ``results``.
    * @param {string} nextUrlAttribute The attribute in the response data that
    *    contains the URL of the next pagination page. Defaults to ``next``.
-   * @param {number} maxPages The max number of pages to load. If this is ``null``
-   *    (the default) we load all pages until the ``nextUrlAttribute`` value is ``null``
-   *    or ``undefined``.
    * @returns {Promise<any>}
    */
   getAllPaginationPages (maxPages = null, resultsAttribute = 'results', nextUrlAttribute = 'next') {
