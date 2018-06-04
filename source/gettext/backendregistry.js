@@ -23,17 +23,17 @@ export class GettextBackendRegistry {
   }
 
   addDefaultBackends () {
-    this.add('noop', NoopBackend())
-    this.add('noop_silent', NoopSilentBackend())
-    this.add('django', DjangoBackend())
+    this.add('noop', new NoopBackend())
+    this.add('noop_silent', new NoopSilentBackend())
+    this.add('django', new DjangoBackend())
   }
 
   add (backendId, backendObject) {
-    this._backendMap.add(backendId, backendObject)
+    this._backendMap.set(backendId, backendObject)
   }
 
   activateBackend (backendId) {
-    if (!this._backendMap.contains(backendId)) {
+    if (!this._backendMap.has(backendId)) {
       if (process.env.NODE_ENV !== 'test') {
         console.warn(`Invalid gettext backend ID: ${backendId}.`)
       }
