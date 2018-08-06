@@ -4,30 +4,30 @@ import typeDetect from '../utils/typeDetect'
  * Query-string creator and parser.
  *
  * @example <caption>Basics - build a querystring</caption>
- * const querystring = new QueryString();
- * querystring.set('name', 'Peter');
- * querystring.setIterable('tags', ['person', 'male']);
- * const encodedQuerystring = querystring.urlencode();
+ * const querystring = new QueryString()
+ * querystring.set('name', 'Peter')
+ * querystring.setIterable('tags', ['person', 'male'])
+ * const encodedQuerystring = querystring.urlencode()
  * // encodedQuerystring === 'name=Peter&tags=person&tags=male'  // order may vary
  *
  * @example <caption>Parse a querystring</caption>
- * const querystring = new QueryString('name=Peter&tags=person&tags=male');
- * const name = querystring.get('name');
- * const tags = querystring.getArray('tags');
- * const firstTag = querystring.get('tags');
+ * const querystring = new QueryString('name=Peter&tags=person&tags=male')
+ * const name = querystring.get('name')
+ * const tags = querystring.getArray('tags')
+ * const firstTag = querystring.get('tags')
  *
  * @example <caption>Parse a querystring from window.location.search</caption>
  * // window.location.search == "?name=test&age=12"
- * const querystring = new QueryString(window.location.search);
- * const name = querystring.get('name');
- * const age = querystring.get('age');
+ * const querystring = new QueryString(window.location.search)
+ * const name = querystring.get('name')
+ * const age = querystring.get('age')
  *
  * @example <caption>Parse and modify a querystring</caption>
- * const querystring = new QueryString('name=Peter&tags=person&tags=male');
- * querystring.set('name', 'John');
- * querystring.append('tags', 'important');
+ * const querystring = new QueryString('name=Peter&tags=person&tags=male')
+ * querystring.set('name', 'John')
+ * querystring.append('tags', 'important')
  * // querystring.urlencode() === 'name=John&tags=person&tags=male&tags=important'
- * querystring.setIterable('tags', ['male']);
+ * querystring.setIterable('tags', ['male'])
  * // querystring.urlencode() === 'name=John&tags=male'
  */
 export default class QueryString {
@@ -36,12 +36,12 @@ export default class QueryString {
    * @param {string} querystring Optional input querystring to parse.
    */
   constructor(querystring='') {
-    this._queryStringMap = new Map();
+    this._queryStringMap = new Map()
     if(querystring) {
       if(typeof querystring !== 'string') {
         throw new TypeError('The querystring argument must be a string.')
       }
-      this._parseQueryString(querystring);
+      this._parseQueryString(querystring)
     }
   }
 
@@ -62,39 +62,39 @@ export default class QueryString {
    * @returns {boolean}
    */
   isEmpty() {
-    return this._queryStringMap.size === 0;
+    return this._queryStringMap.size === 0
   }
 
   /**
    * Remove all keys and values from the QueryString.
    */
   clear() {
-    this._queryStringMap.clear();
+    this._queryStringMap.clear()
   }
 
   _parseQueryStringItem(querystringItem) {
-    const splitPair = querystringItem.split('=');
-    const key = decodeURIComponent(splitPair[0]);
-    const value = decodeURIComponent(splitPair[1]);
-    this.append(key, value);
+    const splitPair = querystringItem.split('=')
+    const key = decodeURIComponent(splitPair[0])
+    const value = decodeURIComponent(splitPair[1])
+    this.append(key, value)
   }
 
   _parseQueryString(querystring) {
     if(querystring.substring(0, 1) == '?') {
-      querystring = querystring.substring(1);
+      querystring = querystring.substring(1)
     }
-    const splitQueryString = querystring.split('&');
+    const splitQueryString = querystring.split('&')
     for(const querystringItem of splitQueryString) {
-      this._parseQueryStringItem(querystringItem);
+      this._parseQueryStringItem(querystringItem)
     }
   }
 
   _addToKey(key, value) {
-    this._queryStringMap.get(key).push(value);
+    this._queryStringMap.get(key).push(value)
   }
 
   _setKeyToEmptyArray(key) {
-    this._queryStringMap.set(key, []);
+    this._queryStringMap.set(key, [])
   }
 
   /**
@@ -104,9 +104,9 @@ export default class QueryString {
    * provided ``querystring``.
    *
    * @example
-   * const querystring = new QueryString();
-   * querystring.set('name', 'oldname');
-   * querystring.addValuesFromQueryString('name=newname&age=33');
+   * const querystring = new QueryString()
+   * querystring.set('name', 'oldname')
+   * querystring.addValuesFromQueryString('name=newname&age=33')
    * // querystring.get('name') == 'newname'
    * // querystring.get('age') == '33'
    *
@@ -114,7 +114,7 @@ export default class QueryString {
    *    Examples: ``"?a=10"``, ``"a=10"``, ``"a=10&s=test"``.
    */
   setValuesFromQueryString(querystring) {
-    this.merge(new this.constructor(querystring));
+    this.merge(new this.constructor(querystring))
   }
 
   /**
@@ -128,13 +128,13 @@ export default class QueryString {
    * iterables like arrays and sets.
    *
    * @example
-   * const querystring = new QueryString();
-   * querystring.set('name', 'oldname');
+   * const querystring = new QueryString()
+   * querystring.set('name', 'oldname')
    * querystring.addValuesFromObject({
    *   name: 'newname',
    *   age: 33,
    *   tags: ['tag1', 'tag2']
-   * });
+   * })
    * // querystring.get('name') == 'newname'
    * // querystring.get('age') == 33
    * // querystring.getArray('tags') == ['tag1', 'tag2']
@@ -143,7 +143,7 @@ export default class QueryString {
    */
   setValuesFromObject(object) {
     for(let key of Object.keys(object)) {
-      this.setSmart(key, object[key]);
+      this.setSmart(key, object[key])
     }
   }
 
@@ -158,13 +158,13 @@ export default class QueryString {
    * iterables like arrays and sets.
    *
    * @example
-   * const querystring = new QueryString();
-   * querystring.set('name', 'oldname');
+   * const querystring = new QueryString()
+   * querystring.set('name', 'oldname')
    * querystring.addValuesFromMap(new Map([
    *   ['name', 'newname'],
    *   ['age', 33],
    *   ['tags', ['tag1', 'tag2']]
-   * ]));
+   * ]))
    * // querystring.get('name') == 'newname'
    * // querystring.get('age') == 33
    * // querystring.getArray('tags') == ['tag1', 'tag2']
@@ -173,7 +173,7 @@ export default class QueryString {
    */
   setValuesFromMap(map) {
     for(let [key, value] of map.entries()) {
-      this.setSmart(key, value);
+      this.setSmart(key, value)
     }
   }
 
@@ -185,10 +185,10 @@ export default class QueryString {
    * one overwriting any preceding values.
    *
    * @example
-   * const querystring = new QueryString('name=oldname');
+   * const querystring = new QueryString('name=oldname')
    * querystring.merge(
    *    new QueryString('name=newname1&age=33'),
-   *    new QueryString('name=newname2&size=large'));
+   *    new QueryString('name=newname2&size=large'))
    * // querystring.get('name') == 'newname2'
    * // querystring.get('age') == '33'
    * // querystring.get('size') == 'large'
@@ -198,7 +198,7 @@ export default class QueryString {
   merge(...queryStringObjects) {
     for(let queryStringObject of queryStringObjects) {
       for (let [key, value] of queryStringObject._queryStringMap) {
-        this._queryStringMap.set(key, value);
+        this._queryStringMap.set(key, value)
       }
     }
   }
@@ -214,16 +214,16 @@ export default class QueryString {
    *      from the QueryString.
    *
    * @example
-   * const querystring = QueryString();
-   * querystring.setIterable('names', ['Peter', 'Jane']);
+   * const querystring = QueryString()
+   * querystring.setIterable('names', ['Peter', 'Jane'])
    */
   setIterable(key, iterable) {
-    this._setKeyToEmptyArray(key);
+    this._setKeyToEmptyArray(key)
     for(const value of iterable) {
-      this._addToKey(key, value);
+      this._addToKey(key, value)
     }
     if(this._queryStringMap.get(key).length === 0) {
-      this.remove(key);
+      this.remove(key)
     }
   }
 
@@ -234,11 +234,11 @@ export default class QueryString {
    * @param {string} value The value to set.
    *
    * @example
-   * const querystring = QueryString();
-   * querystring.set('name', 'Peter');
+   * const querystring = QueryString()
+   * querystring.set('name', 'Peter')
    */
   set(key, value) {
-    this.setIterable(key, [value]);
+    this.setIterable(key, [value])
   }
 
   /**
@@ -268,12 +268,12 @@ export default class QueryString {
    * @param {string} fallback An optional fallback value if the key is
    *      not in the QueryString. Defaults to ``undefined``.
    */
-  get(key, fallback) {
-    const value = this._queryStringMap.get(key);
-    if(typeof value === 'undefined') {
-      return fallback;
+  get (key, fallback = undefined) {
+    const value = this._queryStringMap.get(key)
+    if (typeof value === 'undefined') {
+      return fallback
     } else {
-      return value[0];
+      return value[0]
     }
   }
 
@@ -284,16 +284,16 @@ export default class QueryString {
    * @param {string} value The value to append.
    *
    * @example
-   * const querystring = QueryString();
-   * querystring.append('names', 'Jane');
-   * querystring.append('names', 'Joe');
+   * const querystring = QueryString()
+   * querystring.append('names', 'Jane')
+   * querystring.append('names', 'Joe')
    * // querystring.urlencode() === 'names=Jane&names=Joe'
    */
   append(key, value) {
     if (!this._queryStringMap.has(key)) {
-      this._setKeyToEmptyArray(key);
+      this._setKeyToEmptyArray(key)
     }
-    this._addToKey(key, value);
+    this._addToKey(key, value)
   }
 
   /**
@@ -309,13 +309,13 @@ export default class QueryString {
    */
   getArray(key, fallback) {
     if (this._queryStringMap.has(key)) {
-      const valueArray = this._queryStringMap.get(key);
-      return Array.from(valueArray);
+      const valueArray = this._queryStringMap.get(key)
+      return Array.from(valueArray)
     }
     if(typeof falback !== 'undefined') {
-      return [];
+      return []
     }
-    return fallback;
+    return fallback
   }
 
   /**
@@ -324,7 +324,7 @@ export default class QueryString {
    * @param {string} key The key to remove.
    */
   remove(key) {
-    this._queryStringMap.delete(key);
+    this._queryStringMap.delete(key)
   }
 
   /**
@@ -334,36 +334,36 @@ export default class QueryString {
    * @returns {boolean}
    */
   has(key) {
-    return this._queryStringMap.has(key);
+    return this._queryStringMap.has(key)
   }
 
   _encodeKeyValue(key, value) {
-    key = `${key}`;
-    value = `${value}`;
-    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    key = `${key}`
+    value = `${value}`
+    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
   }
 
   /**
    * Get the QueryString object as a string in query-string format.
    *
    * @example
-   * const querystring = QueryString();
-   * querystring.set('next', '/a&b/');
-   * querystring.set('name', 'john');
-   * let urlEncodedQuerystring = querystring.urlencode();
+   * const querystring = QueryString()
+   * querystring.set('next', '/a&b/')
+   * querystring.set('name', 'john')
+   * let urlEncodedQuerystring = querystring.urlencode()
    * // urlEncodedQuerystring === 'name=john&next=%2Fa%26b%2F'  // order may vary
    *
    * @example <caption>Sort keys</caption>
-   * const querystring = QueryString();
-   * querystring.set('name', 'john');
-   * querystring.set('age', 33);
-   * let urlEncodedQuerystring = querystring.urlencode({sortKeys: true});
+   * const querystring = QueryString()
+   * querystring.set('name', 'john')
+   * querystring.set('age', 33)
+   * let urlEncodedQuerystring = querystring.urlencode({sortKeys: true})
    * // urlEncodedQuerystring === 'age=33&name=john'
    *
    * @example <caption>Sort values</caption>
-   * const querystring = QueryString();
-   * querystring.setIterable('name', ['john', 'amy', 'xion']);
-   * let urlEncodedQuerystring = querystring.urlencode();
+   * const querystring = QueryString()
+   * querystring.setIterable('name', ['john', 'amy', 'xion'])
+   * let urlEncodedQuerystring = querystring.urlencode()
    * // urlEncodedQuerystring === 'name=amy&name=john&name=xion'
    *
    *
@@ -381,9 +381,9 @@ export default class QueryString {
       keys.sort()
     }
 
-    let urlEncodedArray = [];
+    let urlEncodedArray = []
     for(let key of keys) {
-      let valueArray = this._queryStringMap.get(key);
+      let valueArray = this._queryStringMap.get(key)
       if(sortValues) {
         valueArray = Array.from(valueArray)
         valueArray.sort()
@@ -392,9 +392,9 @@ export default class QueryString {
         if(skipEmptyValues && `${value}` === '') {
           continue
         }
-        urlEncodedArray.push(this._encodeKeyValue(key, value));
+        urlEncodedArray.push(this._encodeKeyValue(key, value))
       }
     }
-    return urlEncodedArray.join('&');
+    return urlEncodedArray.join('&')
   }
 }
