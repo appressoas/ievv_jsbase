@@ -130,7 +130,7 @@ export default class QueryString {
    * @example
    * const querystring = new QueryString()
    * querystring.set('name', 'oldname')
-   * querystring.addValuesFromObject({
+   * querystring.setValuesFromObject({
    *   name: 'newname',
    *   age: 33,
    *   tags: ['tag1', 'tag2']
@@ -160,7 +160,7 @@ export default class QueryString {
    * @example
    * const querystring = new QueryString()
    * querystring.set('name', 'oldname')
-   * querystring.addValuesFromMap(new Map([
+   * querystring.setValuesFromMap(new Map([
    *   ['name', 'newname'],
    *   ['age', 33],
    *   ['tags', ['tag1', 'tag2']]
