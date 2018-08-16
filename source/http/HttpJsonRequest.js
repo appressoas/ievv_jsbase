@@ -1,7 +1,6 @@
-import HttpJsonResponse from "./HttpJsonResponse"
-import HttpRequest from "./HttpRequest"
+import HttpJsonResponse from './HttpJsonResponse'
+import HttpRequest from './HttpRequest'
 import ObjectManager from '../utils/ObjectManager'
-
 
 /**
  * Extends {@link HttpRequest} with transparent JSON request/response handling.
@@ -21,7 +20,7 @@ export default class HttpJsonRequest extends HttpRequest {
   /**
    * Overridden to automatically convert request data to JSON.
    */
-  makeRequestBody(data) {
+  makeRequestBody (data) {
     return JSON.stringify(data)
   }
 
@@ -31,7 +30,7 @@ export default class HttpJsonRequest extends HttpRequest {
    *
    * @returns {HttpJsonResponse}
    */
-  makeResponse() {
+  makeResponse () {
     return new HttpJsonResponse(this.request)
   }
 
@@ -39,7 +38,7 @@ export default class HttpJsonRequest extends HttpRequest {
    * Overridden to ensure we send the correct content-type header for
    * json requests.
    */
-  setDefaultRequestHeaders(method) {
+  setDefaultRequestHeaders (method) {
     super.setDefaultRequestHeaders(method)
     this.setRequestHeader('Accept', 'application/json')
     this.setRequestHeader('Content-Type', 'application/json; charset=UTF-8')

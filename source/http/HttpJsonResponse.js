@@ -1,5 +1,4 @@
-import HttpResponse from "./HttpResponse";
-
+import HttpResponse from './HttpResponse'
 
 /**
  * Extends HttpResponse with extra functionality for
@@ -11,33 +10,33 @@ import HttpResponse from "./HttpResponse";
  */
 export default class HttpJsonResponse extends HttpResponse {
 
-    /**
-     * Get the response body (the responseText attribute of the XMLHttpRequest)
-     * decoded from JSON.
-     */
-    get bodydata() {
-        if(this.isConnectionRefused()) {
-            return null;
-        } else {
-            return this.__parseResponseTextAsJson();
-        }
+  /**
+   * Get the response body (the responseText attribute of the XMLHttpRequest)
+   * decoded from JSON.
+   */
+  get bodydata () {
+    if (this.isConnectionRefused()) {
+      return null
+    } else {
+      return this.__parseResponseTextAsJson()
     }
+  }
 
-    __parseResponseTextAsJson() {
-        return JSON.parse(this.body);
-    }
+  __parseResponseTextAsJson () {
+    return JSON.parse(this.body)
+  }
 
-    /**
-     * Overriden to make use of JSON.stringify to produce more
-     * pretty output.
-     */
-    getPrettyfiedBody() {
-        let prettyBody;
-        try {
-            prettyBody = JSON.stringify(this.bodydata, null, 2);
-        } catch (SyntaxError) {
-            prettyBody = this.body;
-        }
-        return prettyBody;
+  /**
+   * Overriden to make use of JSON.stringify to produce more
+   * pretty output.
+   */
+  getPrettyfiedBody () {
+    let prettyBody
+    try {
+      prettyBody = JSON.stringify(this.bodydata, null, 2)
+    } catch (SyntaxError) {
+      prettyBody = this.body
     }
+    return prettyBody
+  }
 }

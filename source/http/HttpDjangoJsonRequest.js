@@ -19,16 +19,16 @@ export default class HttpDjangoJsonRequest extends HttpJsonRequest {
   /**
    * @param args Same args as for {@link HttpResponse}.
    */
-  constructor(...args) {
-    super(...args);
-    this._cookies = new HttpCookies();
+  constructor (...args) {
+    super(...args)
+    this._cookies = new HttpCookies()
   }
 
   /**
    * Returns the value of the ``csrftoken`` cookie.
    */
-  get csrftoken() {
-    return this._cookies.getStrict('csrftoken');
+  get csrftoken () {
+    return this._cookies.getStrict('csrftoken')
   }
 
   /**
@@ -37,11 +37,11 @@ export default class HttpDjangoJsonRequest extends HttpJsonRequest {
    *
    * @param method See {@link HttpRequest}.
    */
-  setDefaultRequestHeaders(method) {
-    super.setDefaultRequestHeaders(method);
-    let shouldAddCsrfToken = !(method == 'GET' || method == 'HEAD');
-    if(shouldAddCsrfToken) {
-      this.setRequestHeader("X-CSRFToken", this.csrftoken);
+  setDefaultRequestHeaders (method) {
+    super.setDefaultRequestHeaders(method)
+    let shouldAddCsrfToken = !(method === 'GET' || method === 'HEAD')
+    if (shouldAddCsrfToken) {
+      this.setRequestHeader('X-CSRFToken', this.csrftoken)
     }
   }
 }

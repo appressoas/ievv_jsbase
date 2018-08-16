@@ -1,6 +1,5 @@
-import HttpResponse from "./HttpResponse"
-import {UrlParser} from "./UrlParser"
-
+import HttpResponse from './HttpResponse'
+import { UrlParser } from './UrlParser'
 
 /**
  * API for performing HTTP requests.
@@ -52,14 +51,16 @@ export default class HttpRequest {
    *      If this is supplied, it is passed to
    *      {@link HttpRequest#setUrl}
    */
-  constructor(url) {
+  constructor (url) {
     this._treatRedirectResponseAsError = true
     this.requestHeaders = new Map()
     this.request = null
     this._urlParser = null
-    if(typeof url !== 'undefined') {
+    this._timeoutMs = null
+    if (typeof url !== 'undefined') {
       this.setUrl(url)
     }
+    this._handleTimeout = this._handleTimeout.bind(this)
   }
 
   /**
@@ -86,7 +87,7 @@ export default class HttpRequest {
    *
    * @returns {UrlParser} The UrlParser for the parsed URL.
    */
-  get urlParser() {
+  get urlParser () {
     return this._urlParser
   }
 
@@ -95,8 +96,12 @@ export default class HttpRequest {
    *
    * @param {String} url The URL.
    */
-  setUrl(url) {
+  setUrl (url) {
     this._urlParser = new UrlParser(url)
+  }
+
+  setTimeout (timeoutMs) {
+    this._timeoutMs = timeoutMs
   }
 
   /**
@@ -112,12 +117,35 @@ export default class HttpRequest {
    * const request = HttpRequest('http://example.com/api/')
    * request.setTreatRedirectResponseAsError(false)
    */
-  setTreatRedirectResponseAsError(treatRedirectResponseAsError) {
+  setTreatRedirectResponseAsError (treatRedirectResponseAsError) {
     this._treatRedirectResponseAsError = treatRedirectResponseAsError
   }
 
   _makeXMLHttpRequest () {
-    return new XMLHttpRequest()
+    return new window.XMLHttpRequest()
+  }
+
+  _handleTimeout (reject, event) {
+    const response = this.makeResponse(true)
+    reject(response.toError())
+  }
+
+  _applyTimeoutToRequest (reject) {
+    if (this._timeoutMs !== null) {
+      this.request.timeout = this._timeoutMs
+      this.request.ontimeout = (event) => {
+        this._handleTimeout(reject, event)
+      }
+    }
+  }
+
+  _applyRequestFailureManagement (reject) {
+    this.request.onreadystatechange = () => {
+      if (this.request.readyState === 4 && this.request.status === 0) {
+        const response = this.makeResponse()
+        reject(response)
+      }
+    }
   }
 
   /**
@@ -137,9 +165,9 @@ export default class HttpRequest {
    *      {@link HttpResponseError} object created using
    *      {@link HttpResponse#toError}.
    */
-  send(method, data) {
+  send (method, data) {
     method = method.toUpperCase()
-    if(this._urlParser === null) {
+    if (this._urlParser === null) {
       throw new TypeError('Can not call send() without an url.')
     }
     return new Promise((resolve, reject) => {
@@ -147,7 +175,9 @@ export default class HttpRequest {
       this.request.open(method, this.urlParser.buildUrl(), true)
       this.setDefaultRequestHeaders(method)
       this._applyRequestHeadersToRequest()
-      this.request.onload  = () => this._onComplete(resolve, reject)
+      this._applyTimeoutToRequest(reject)
+      this._applyRequestFailureManagement(reject)
+      this.request.onload = () => this._onComplete(resolve, reject)
       this.request.send(this.makeRequestBody(data))
     })
   }
@@ -157,7 +187,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  get(data) {
+  get (data) {
     return this.send('get', data)
   }
 
@@ -166,7 +196,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  head(data) {
+  head (data) {
     return this.send('head', data)
   }
 
@@ -175,7 +205,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  post(data) {
+  post (data) {
     return this.send('post', data)
   }
 
@@ -184,7 +214,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  put(data) {
+  put (data) {
     return this.send('put', data)
   }
 
@@ -193,7 +223,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  patch(data) {
+  patch (data) {
     return this.send('patch', data)
   }
 
@@ -204,7 +234,7 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  httpdelete(data) {
+  httpdelete (data) {
     return this.send('delete', data)
   }
 
@@ -217,7 +247,7 @@ export default class HttpRequest {
    *
    * Must return a string.
    */
-  makeRequestBody(data) {
+  makeRequestBody (data) {
     return data
   }
 
@@ -225,8 +255,8 @@ export default class HttpRequest {
    * Creates a {@link HttpResponse}.
    * @returns {HttpResponse}
    */
-  makeResponse() {
-    return new HttpResponse(this.request)
+  makeResponse (...extraResponseParams) {
+    return new HttpResponse(this.request, ...extraResponseParams)
   }
 
   _applyRequestHeadersToRequest () {
@@ -241,7 +271,7 @@ export default class HttpRequest {
    * @param header The header name. E.g.: ``"Content-type"``.
    * @param value The header value.
    */
-  setRequestHeader(header, value) {
+  setRequestHeader (header, value) {
     this.requestHeaders.set(header, value)
   }
 
@@ -253,17 +283,17 @@ export default class HttpRequest {
    * @param method The HTTP request method (GET, POST, PUT, ...).
    *      Will always be uppercase.
    */
-  setDefaultRequestHeaders(method) {}
+  setDefaultRequestHeaders (method) {}
 
-  _onComplete(resolve, reject) {
+  _onComplete (resolve, reject) {
     let response = this.makeResponse()
     let isSuccess = false
-    if(this._treatRedirectResponseAsError) {
+    if (this._treatRedirectResponseAsError) {
       isSuccess = response.isSuccess()
     } else {
       isSuccess = response.isSuccess() || response.isRedirect()
     }
-    if(isSuccess) {
+    if (isSuccess) {
       resolve(response)
     } else {
       reject(response.toError())

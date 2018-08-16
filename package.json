@@ -20,6 +20,7 @@
   "scripts": {
     "build": "babel source --out-dir lib",
     "build-watch": "babel source --watch --out-dir lib",
+    "build-watch-verbose": "babel source --watch --out-dir lib --verbose",
     "clean": "rm -rf lib built_docs",
     "build-docs": "esdoc -c esdoc.json",
     "test": "jest",
