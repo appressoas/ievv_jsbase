@@ -35,10 +35,10 @@ export default class QueryString {
    *
    * @param {string} querystring Optional input querystring to parse.
    */
-  constructor(querystring='') {
+  constructor (querystring = '') {
     this._queryStringMap = new Map()
-    if(querystring) {
-      if(typeof querystring !== 'string') {
+    if (querystring) {
+      if (typeof querystring !== 'string') {
         throw new TypeError('The querystring argument must be a string.')
       }
       this._parseQueryString(querystring)
@@ -61,39 +61,39 @@ export default class QueryString {
    *
    * @returns {boolean}
    */
-  isEmpty() {
+  isEmpty () {
     return this._queryStringMap.size === 0
   }
 
   /**
    * Remove all keys and values from the QueryString.
    */
-  clear() {
+  clear () {
     this._queryStringMap.clear()
   }
 
-  _parseQueryStringItem(querystringItem) {
+  _parseQueryStringItem (querystringItem) {
     const splitPair = querystringItem.split('=')
     const key = decodeURIComponent(splitPair[0])
     const value = decodeURIComponent(splitPair[1])
     this.append(key, value)
   }
 
-  _parseQueryString(querystring) {
-    if(querystring.substring(0, 1) == '?') {
+  _parseQueryString (querystring) {
+    if (querystring.substring(0, 1) === '?') {
       querystring = querystring.substring(1)
     }
     const splitQueryString = querystring.split('&')
-    for(const querystringItem of splitQueryString) {
+    for (const querystringItem of splitQueryString) {
       this._parseQueryStringItem(querystringItem)
     }
   }
 
-  _addToKey(key, value) {
+  _addToKey (key, value) {
     this._queryStringMap.get(key).push(value)
   }
 
-  _setKeyToEmptyArray(key) {
+  _setKeyToEmptyArray (key) {
     this._queryStringMap.set(key, [])
   }
 
@@ -113,7 +113,7 @@ export default class QueryString {
    * @param {string} querystring A querystring, like the one in window.location.search.
    *    Examples: ``"?a=10"``, ``"a=10"``, ``"a=10&s=test"``.
    */
-  setValuesFromQueryString(querystring) {
+  setValuesFromQueryString (querystring) {
     this.merge(new this.constructor(querystring))
   }
 
@@ -141,8 +141,8 @@ export default class QueryString {
    *
    * @param {Object} object An Object.
    */
-  setValuesFromObject(object) {
-    for(let key of Object.keys(object)) {
+  setValuesFromObject (object) {
+    for (let key of Object.keys(object)) {
       this.setSmart(key, object[key])
     }
   }
@@ -171,8 +171,8 @@ export default class QueryString {
    *
    * @param {Map} map A map.
    */
-  setValuesFromMap(map) {
-    for(let [key, value] of map.entries()) {
+  setValuesFromMap (map) {
+    for (let [key, value] of map.entries()) {
       this.setSmart(key, value)
     }
   }
@@ -195,8 +195,8 @@ export default class QueryString {
    *
    * @param queryStringObjects Zero or more {@link QueryString} objects.
    */
-  merge(...queryStringObjects) {
-    for(let queryStringObject of queryStringObjects) {
+  merge (...queryStringObjects) {
+    for (let queryStringObject of queryStringObjects) {
       for (let [key, value] of queryStringObject._queryStringMap) {
         this._queryStringMap.set(key, value)
       }
@@ -217,12 +217,12 @@ export default class QueryString {
    * const querystring = QueryString()
    * querystring.setIterable('names', ['Peter', 'Jane'])
    */
-  setIterable(key, iterable) {
+  setIterable (key, iterable) {
     this._setKeyToEmptyArray(key)
-    for(const value of iterable) {
+    for (const value of iterable) {
       this._addToKey(key, value)
     }
-    if(this._queryStringMap.get(key).length === 0) {
+    if (this._queryStringMap.get(key).length === 0) {
       this.remove(key)
     }
   }
@@ -237,7 +237,7 @@ export default class QueryString {
    * const querystring = QueryString()
    * querystring.set('name', 'Peter')
    */
-  set(key, value) {
+  set (key, value) {
     this.setIterable(key, [value])
   }
 
@@ -250,14 +250,20 @@ export default class QueryString {
    *    {@link QueryString#set} or {@link QueryString#setIterable} depending
    *    on the type.
    */
-  setSmart(key, value) {
-    const valueType = typeDetect(value)
-    if(valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      this.set(key, value)
-    } else if(valueType === 'array' || valueType === 'set') {
-      this.setIterable(key, value)
+  setSmart (key, value) {
+    if (value === null || value === undefined) {
+      if (this.has(key)) {
+        this.remove(key)
+      }
     } else {
-      throw new Error(`Unsupporter value type: ${valueType}`)
+      const valueType = typeDetect(value)
+      if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+        this.set(key, value)
+      } else if (valueType === 'array' || valueType === 'set') {
+        this.setIterable(key, value)
+      } else {
+        throw new Error(`Unsupporter value type: ${valueType}`)
+      }
     }
   }
 
@@ -277,6 +283,17 @@ export default class QueryString {
     }
   }
 
+  getSmart (key, fallback = undefined) {
+    if (!this.has(key)) {
+      return fallback
+    }
+    const valueArray = this.getArray(key)
+    if (valueArray.length === 1) {
+      return valueArray[0]
+    }
+    return valueArray
+  }
+
   /**
    * Append a value to a key.
    *
@@ -289,7 +306,7 @@ export default class QueryString {
    * querystring.append('names', 'Joe')
    * // querystring.urlencode() === 'names=Jane&names=Joe'
    */
-  append(key, value) {
+  append (key, value) {
     if (!this._queryStringMap.has(key)) {
       this._setKeyToEmptyArray(key)
     }
@@ -307,12 +324,12 @@ export default class QueryString {
    *      key is not in the QueryString. Defaults to an empty array.
    * @returns {Array}
    */
-  getArray(key, fallback) {
+  getArray (key, fallback = undefined) {
     if (this._queryStringMap.has(key)) {
       const valueArray = this._queryStringMap.get(key)
       return Array.from(valueArray)
     }
-    if(typeof falback !== 'undefined') {
+    if (typeof fallback !== 'undefined') {
       return []
     }
     return fallback
@@ -323,7 +340,7 @@ export default class QueryString {
    *
    * @param {string} key The key to remove.
    */
-  remove(key) {
+  remove (key) {
     this._queryStringMap.delete(key)
   }
 
@@ -333,14 +350,23 @@ export default class QueryString {
    * @param {string} key The key to check for.
    * @returns {boolean}
    */
-  has(key) {
+  has (key) {
     return this._queryStringMap.has(key)
   }
 
-  _encodeKeyValue(key, value) {
+  _encodeKeyValue (key, value) {
     key = `${key}`
     value = `${value}`
     return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+  }
+
+  /**
+   * Get all the keys in the querystring.
+   *
+   * @returns {IterableIterator<any>}
+   */
+  keys () {
+    return this._queryStringMap.keys()
   }
 
   /**
@@ -373,23 +399,23 @@ export default class QueryString {
    *    This only makes sense if you have keys with multiple values.
    * @param {boolean} options.skipEmptyValues Skip empty values? ``false`` by default.
    */
-  urlencode(options={}) {
+  urlencode (options = {}) {
     const {sortKeys, sortValues, skipEmptyValues} = options
     let keys = this._queryStringMap.keys()
-    if(sortKeys) {
+    if (sortKeys) {
       keys = Array.from(keys)
       keys.sort()
     }
 
     let urlEncodedArray = []
-    for(let key of keys) {
+    for (let key of keys) {
       let valueArray = this._queryStringMap.get(key)
-      if(sortValues) {
+      if (sortValues) {
         valueArray = Array.from(valueArray)
         valueArray.sort()
       }
-      for(const value of valueArray) {
-        if(skipEmptyValues && `${value}` === '') {
+      for (const value of valueArray) {
+        if (skipEmptyValues && `${value}` === '') {
           continue
         }
         urlEncodedArray.push(this._encodeKeyValue(key, value))
