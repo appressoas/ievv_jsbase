@@ -17,6 +17,8 @@ export default class HttpJsonResponse extends HttpResponse {
   get bodydata () {
     if (this.isConnectionRefused()) {
       return null
+    } else if (this.status === 204) {
+      return null
     } else {
       return this.__parseResponseTextAsJson()
     }
