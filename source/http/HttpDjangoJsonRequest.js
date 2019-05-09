@@ -28,6 +28,9 @@ export default class HttpDjangoJsonRequest extends HttpJsonRequest {
    * Returns the value of the ``csrftoken`` cookie.
    */
   get csrftoken () {
+    if (window.ievvJsBaseDjangoCsrfToken) {
+      return window.ievvJsBaseDjangoCsrfToken
+    }
     return this._cookies.getStrict('csrftoken')
   }
 
@@ -41,7 +44,12 @@ export default class HttpDjangoJsonRequest extends HttpJsonRequest {
     super.setDefaultRequestHeaders(method)
     let shouldAddCsrfToken = !(method === 'GET' || method === 'HEAD')
     if (shouldAddCsrfToken) {
-      this.setRequestHeader('X-CSRFToken', this.csrftoken)
+      const csrftoken = this.csrftoken
+      if (csrftoken) {
+        this.setRequestHeader('X-CSRFToken', this.csrftoken)
+      } else {
+        console.warn('CSRF token not found')
+      }
     }
   }
 }
