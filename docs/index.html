@@ -101,7 +101,50 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><p><strong>TODO:</strong> edit this text in <code>esdoc/index.md</code>.</p>
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="ievv_jsbase">ievv_jsbase</h1>
+<p>General purpose ES6 utility library for common web client needs.</p>
+<p>ievv_jsbase is created to cover basic javascript needs for the
+<a href="https://github.com/appressoas/ievv_opensource">https://github.com/appressoas/ievv_opensource</a> and
+<a href="https://github.com/appressoas/django_cradmin">https://github.com/appressoas/django_cradmin</a>
+python libraries, and the commersial IEVV library.</p>
+<h2 id="install">Install</h2>
+<pre><code><code class="source-code prettyprint">$ npm install ievv_jsbase
+.. or ..
+$ yarn add ievv_jsbase</code>
+</code></pre><h2 id="docs">Docs</h2>
+<ol>
+<li>Clone a local copy of the <a href="https://github.com/appressoas/ievv_jsbase">https://github.com/appressoas/ievv_jsbase</a> git repo.</li>
+<li>Run <code>npm install</code> or <code>yarn</code> (depending on your preferred package manager)</li>
+<li>Run <code>npm run build-docs</code> or <code>yarn run build-docs</code> (depending on your preferred package manager)</li>
+<li>Open <code>docs/index.html</code> in a browser.</li>
+</ol>
+<h2 id="release-a-new-version">Release a new version</h2>
+<p>(for people with publish permissions for the npm package)</p>
+<ol>
+<li><p>Build:</p>
+<pre><code><code class="source-code prettyprint">$ yarn run build</code>
+</code></pre></li>
+<li>Update the <code>version</code> in <code>package.json</code>.</li>
+<li><code>npm publish</code>.</li>
+<li>Git commit the changes. The commit should be
+<code>Release &lt;version&gt;</code>
+where <code>&lt;version&gt;</code> is the same version as you used in (2).</li>
+<li><code>git tag &lt;version&gt;</code> where <code>&lt;version&gt;</code> is the same version as
+you used in (2).</li>
+<li><code>git push &amp;&amp; git push --tags</code>.</li>
+</ol>
+<h2 id="release-a-new-version-on-github">Release a new version on github</h2>
+<ol>
+<li><p>Build:</p>
+<pre><code><code class="source-code prettyprint">$ yarn run build</code>
+</code></pre></li>
+<li>Update the <code>version</code> in <code>package.json</code>.</li>
+<li>Git commit the changes. The commit should be <code>Release &lt;version&gt;</code>
+where <code>&lt;version&gt;</code> is the same version as you used in (2).</li>
+<li><code>git tag &lt;version&gt;</code> where <code>&lt;version&gt;</code> is the same version as
+you used in (2).</li>
+<li><code>git push &amp;&amp; git push --tags</code>.</li>
+</ol>
 </div>
 </div>
 
