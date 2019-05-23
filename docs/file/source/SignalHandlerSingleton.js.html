@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">source/SignalHandlerSingleton.js | ievv_jsbase API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/SignalHandlerSingleton.js~ReceivedSignalInfo.html">ReceivedSignalInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/SignalHandlerSingleton.js~SentSignalInfo.html">SentSignalInfo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/SignalHandlerSingleton.js~SignalHandlerSingleton.html">SignalHandlerSingleton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeCustomError">makeCustomError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-DuplicateReceiverNameForSignal">DuplicateReceiverNameForSignal</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">__testhelpers__</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/__testhelpers__/XMLHttpRequestMock.js~XMLHttpRequestMock.html">XMLHttpRequestMock</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">dom</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/DOMReplace.js~DOMReplace.html">DOMReplace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/DOMReplaceFromUrl.js~DOMReplaceFromUrl.html">DOMReplaceFromUrl</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/DOMReplaceWithSameElementFromUrl.js~DOMReplaceWithSameElementFromUrl.html">DOMReplaceWithSameElementFromUrl</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/HtmlParser.js~HtmlParser.html">HtmlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/ScriptLoaderSingleton.js~Script.html">Script</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/dom/ScriptLoaderSingleton.js~ScriptLoaderSingleton.html">ScriptLoaderSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">html</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~CleanHtml.html">CleanHtml</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~CleanHtmlOptions.html">CleanHtmlOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~CleanHtmlParser.html">CleanHtmlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~CleanerNode.html">CleanerNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~FlatListCleanerNode.html">FlatListCleanerNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/html/CleanHtml.js~NoTextCleanerNode.html">NoTextCleanerNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-attributeObjectToHtml">attributeObjectToHtml</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-escapeAttributeValue">escapeAttributeValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isInlineTag">isInlineTag</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isSelfClosingTag">isSelfClosingTag</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeHtmlEndTag">makeHtmlEndTag</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeHtmlStartTag">makeHtmlStartTag</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-PasteMarkerNotSetError">PasteMarkerNotSetError</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">http</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpCookies.js~HttpCookies.html">HttpCookies</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpDjangoFileRequest.js~HttpDjangoFileRequest.html">HttpDjangoFileRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpDjangoJsonRequest.js~HttpDjangoJsonRequest.html">HttpDjangoJsonRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpFileRequest.js~HttpFileRequest.html">HttpFileRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpFileResponse.js~HttpFileResponse.html">HttpFileResponse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpJsonRequest.js~JsonHttpRequest.html">JsonHttpRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpJsonResponse.js~HttpJsonResponse.html">HttpJsonResponse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpRequest.js~HttpRequest.html">HttpRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/HttpResponse.js~HttpResponse.html">HttpResponse</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/QueryString.js~QueryString.html">QueryString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/http/UrlParser.js~UrlParser.html">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-HttpCookieNotFoundError">HttpCookieNotFoundError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-HttpResponseError">HttpResponseError</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">log</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/log/AbstractLogger.js~AbstractLogger.html">AbstractLogger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/log/Logger.js~Logger.html">Logger</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/log/LoggerSingleton.js~LoggerSingleton.html">LoggerSingleton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/log/loglevel.js~LogLevels.html">LogLevels</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">polyfill</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-elementRemovePolyfill">elementRemovePolyfill</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/utils/ObjectManager.js~ObjectManager.html">ObjectManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/utils/PrettyFormat.js~PrettyFormat.html">PrettyFormat</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/utils/TypeConvert.js~TypeConvert.html">TypeConvert</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getFileExtension">getFileExtension</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-onDocumentReady">onDocumentReady</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ensureMapHasDataInReduxStore">ensureMapHasDataInReduxStore</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getObjectFromReduxMapOrNullIfLoading">getObjectFromReduxMapOrNullIfLoading</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-getValuesFromTypeMappedReduxMap">getValuesFromTypeMappedReduxMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeApiDataMapDeleted">makeApiDataMapDeleted</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeApiDataMapError">makeApiDataMapError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeApiDataMapIsLoading">makeApiDataMapIsLoading</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeApiDataMapNewData">makeApiDataMapNewData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeImmutableOrderedMapFromValueArray">makeImmutableOrderedMapFromValueArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-makeTypeMappedReduxMapFromApiData">makeTypeMappedReduxMapFromApiData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-typeDetect">typeDetect</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-TYPE_MAPPED_REDUX_MAP_DEFAULT_KEY">TYPE_MAPPED_REDUX_MAP_DEFAULT_KEY</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">widget</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/widget/AbstractWidget.js~AbstractWidget.html">AbstractWidget</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/source/widget/WidgetRegistrySingleton.js~WidgetRegistrySingleton.html">WidgetRegistrySingleton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ElementHasNoWidgetInstanceIdError">ElementHasNoWidgetInstanceIdError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ElementIsNotInitializedAsWidget">ElementIsNotInitializedAsWidget</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ElementIsNotWidgetError">ElementIsNotWidgetError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-InvalidWidgetAliasError">InvalidWidgetAliasError</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">source/SignalHandlerSingleton.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import makeCustomError from &quot;./makeCustomError&quot;;
+import PrettyFormat from &quot;./utils/PrettyFormat&quot;;
+
+/**
+ * Exception raised by {@link HttpCookies#getStrict} when the cookie is not found.
+ *
+ * @type {Error}
+ */
+export let DuplicateReceiverNameForSignal = makeCustomError(&apos;DuplicateReceiverNameForSignal&apos;);
+
+
+/**
+ * Represents information about the received signal.
+ *
+ * An object of this class is sent to the ``callback``
+ * of all signal receivers.
+ *
+ * The data sent by the signal is available in
+ * {@link ReceivedSignalInfo.data}.
+ */
+export class ReceivedSignalInfo {
+  constructor(data, signalName, receiverName) {
+    /**
+     * The data sent by {@link SignalHandlerSingleton#send}.
+     */
+    this.data = data;
+
+    /**
+     * The signal name.
+     *
+     * @type {string}
+     */
+    this.signalName = signalName;
+
+    /**
+     * The receiver name.
+     *
+     * @type {string}
+     */
+    this.receiverName = receiverName;
+  }
+
+  /**
+   * Get a string with information about the received signal.
+   * Includes signal name and receiver name.
+   *
+   * @returns {string}
+   */
+  toString() {
+    return `ReceivedSignalInfo: signalName=&quot;${this.signalName}&quot; receiverName=&quot;${this.receiverName}&quot;`;
+  }
+
+  /**
+   * Get the data pretty formatted as a string.
+   *
+   * @returns {string}
+   */
+  getPrettyFormattedData() {
+    return new PrettyFormat(this.data).toString(2);
+  }
+
+  /**
+   * Get a string with debug information about the received signal.
+   * Includes signal name, receiver name, and pretty formatted data.
+   *
+   * @returns {string}
+   */
+  toDebugString() {
+    return `${this.toString} data=${this.getPrettyFormattedData()}`;
+  }
+}
+
+
+/**
+ * Private class used by {@link _SignalReceivers} to represent
+ * a single receiver listening for a single signal.
+ */
+class _SignalReceiver {
+  constructor(signal, name, callback) {
+    this.signal = signal;
+    this.name = name;
+    this.callback = callback;
+  }
+
+  /**
+   * Asynchronously trigger the receiver callback.
+   * @param data The signal data (the data argument provided for
+   *    {@link SignalHandlerSingleton#send}.
+   */
+  trigger(data) {
+    setTimeout(() =&gt; {
+      this.callback(new ReceivedSignalInfo(data, this.signal.name, this.name));
+    }, 0);
+  }
+}
+
+
+/**
+ * Object containing debugging information about a sent
+ * signal.
+ */
+export class SentSignalInfo {
+  constructor(signalName) {
+    /**
+     * The signal name.
+     *
+     * @type {string}
+     */
+    this.signalName = signalName;
+
+    /**
+     * Array of triggered receiver names.
+     *
+     * @type {Array}
+     */
+    this.triggeredReceiverNames = [];
+  }
+
+  _addReceiverName(receiverName) {
+    this.triggeredReceiverNames.push(receiverName);
+  }
+
+  /**
+   * Get a string representation of the sent signal info.
+   *
+   * @returns {string}
+   */
+  toString() {
+    let receivers = this.triggeredReceiverNames.join(&apos;, &apos;);
+    if(receivers === &apos;&apos;) {
+      receivers = &apos;NO RECEIVERS&apos;;
+    }
+    return `Signal: ${this.signalName} was sent to: ${receivers}`;
+  }
+}
+
+
+/**
+ * Private class used by {@link SignalHandlerSingleton}
+ * to represent all receivers for a single signal.
+ */
+class _SignalReceivers {
+  constructor(name) {
+    this.name = name;
+    this.receiverMap = new Map();
+  }
+
+  /**
+   * Add a receiver.
+   *
+   * @throw DuplicateReceiverNameForSignal If the receiver is already registered for the signal.
+   */
+  addReceiver(receiverName, callback) {
+    if(this.receiverMap.has(receiverName)) {
+      throw new DuplicateReceiverNameForSignal(
+        `The &quot;${receiverName}&quot; receiver is already registered for the &quot;${this.name}&quot; signal`);
+    }
+    this.receiverMap.set(
+      receiverName,
+      new _SignalReceiver(this, receiverName, callback));
+  }
+
+  /**
+   * Remove a receiver.
+   *
+   * If the receiver is not registered for the signal,
+   * nothing happens.
+   */
+  removeReceiver(receiverName) {
+    if(this.receiverMap.has(receiverName)) {
+      this.receiverMap.delete(receiverName);
+    }
+  }
+
+  /**
+   * Check if we have a specific receiver for this signal.
+   */
+  hasReceiver(receiverName) {
+    return this.receiverMap.has(receiverName);
+  }
+
+  /**
+   * Get the number of receivers registered for the signal.
+   */
+  receiverCount() {
+    return this.receiverMap.size;
+  }
+
+  /**
+   * Send the signal.
+   *
+   * @param data The data sent with the signal. Forwarded to
+   *      the signal receiver callback.
+   * @param {SentSignalInfo} info If this is provided, we add the
+   *      name of all receivers the signal was sent to.
+   */
+  send(data, info) {
+    for(let receiver of this.receiverMap.values()) {
+      receiver.trigger(data);
+      if(info) {
+        info._addReceiverName(receiver.name);
+      }
+    }
+  }
+}
+
+
+/**
+ * The instance of the {@link SignalHandlerSingleton}.
+ */
+let _instance = null;
+
+/**
+ * Signal handler singleton for global communication.
+ *
+ * @example &lt;caption&gt;Basic example&lt;/caption&gt;
+ * let signalHandler = new SignalHandlerSingleton();
+ * signalHandler.addReceiver(&apos;myapp.mysignal&apos;, &apos;myotherapp.MyReceiver&apos;, (receivedSignalInfo) =&gt; {
+ *     console.log(&apos;Signal received. Data:&apos;, receivedSignalInfo.data);
+ * });
+ * signalHandler.send(&apos;myapp.mysignal&apos;, {&apos;the&apos;: &apos;data&apos;});
+ *
+ *
+ * @example &lt;caption&gt;Recommended signal and receiver naming&lt;/caption&gt;
+ *
+ * // In myapp/menu/MenuComponent.js
+ * class MenuComponent {
+ *     constructor(menuName) {
+ *         this.menuName = menuName;
+ *         let signalHandler = new SignalHandlerSingleton();
+ *         signalHandler.addReceiver(
+ *             `toggleMenu#${this.menuName}`,
+ *             &apos;myapp.menu.MenuComponent&apos;,
+ *             (receivedSignalInfo) =&gt; {
+ *                  this.toggle();
+ *             }
+ *         );
+ *     }
+ *     toggle() {
+ *         // Toggle the menu
+ *     }
+ * }
+ *
+ * // In myotherapp/widgets/MenuToggle.js
+ * class MenuToggle {
+ *     constructor(menuName) {
+ *         this.menuName = menuName;
+ *     }
+ *     toggle() {
+ *         let signalHandler = new SignalHandlerSingleton();
+ *         signalHandler.send(`toggleMenu#${this.menuName}`);
+ *     }
+ * }
+ *
+ * @example &lt;caption&gt;Multiple receivers&lt;/caption&gt;
+ * let signalHandler = new SignalHandlerSingleton();
+ * signalHandler.addReceiver(&apos;myapp.mysignal&apos;, &apos;myotherapp.MyFirstReceiver&apos;, (receivedSignalInfo) =&gt; {
+ *     console.log(&apos;Signal received by receiver 1!&apos;);
+ * });
+ * signalHandler.addReceiver(&apos;myapp.mysignal&apos;, &apos;myotherapp.MySecondReceiver&apos;, (receivedSignalInfo) =&gt; {
+ *     console.log(&apos;Signal received by receiver 1!&apos;);
+ * });
+ * signalHandler.send(&apos;myapp.mysignal&apos;, {&apos;the&apos;: &apos;data&apos;});
+ *
+ *
+ * @example &lt;caption&gt;Debugging&lt;/caption&gt;
+ * let signalHandler = new SignalHandlerSingleton();
+ * signalHandler.addReceiver(&apos;mysignal&apos;, &apos;MyReceiver&apos;, (receivedSignalInfo) =&gt; {
+ *     console.log(&apos;received signal:&apos;, receivedSignalInfo.toString());
+ * });
+ * signalHandler.send(&apos;myapp.mysignal&apos;, {&apos;the&apos;: &apos;data&apos;}, (sentSignalInfo) =&gt; {
+ *     console.log(&apos;sent signal info:&apos;, sentSignalInfo.toString());
+ * });
+ *
+ */
+export default class SignalHandlerSingleton {
+
+  constructor() {
+    if(!_instance) {
+      _instance = this;
+      this._signalMap = new Map();
+      this._receiverMap = new Map();
+    }
+    return _instance;
+  }
+
+  /**
+   * Remove all receivers for all signals.
+   *
+   * Useful for debugging and tests, but should not be
+   * used for production code.
+   */
+  clearAllReceiversForAllSignals() {
+    this._signalMap.clear();
+  }
+
+  /**
+   * Add a receiver for a specific signal.
+   *
+   * @param {string} signalName The name of the signal.
+   *      Typically something like ``toggleMenu`` or ``myapp.toggleMenu``.
+   *
+   *      What if we have multiple objects listening for this ``toggleMenu``
+   *      signal, and we only want to toggle a specific menu? You need
+   *      to ensure the signalName is unique for each menu. We recommend
+   *      that you do this by adding ``#&lt;context&gt;``. For example
+   *      ``toggleMenu#mainmenu``. This is shown in one of the examples
+   *      above.
+   * @param {string} receiverName The name of the receiver.
+   *      Must be unique for the signal.
+   *      We recommend that you use a very explicit name for your signals.
+   *      It should normally be the full path to the method or function receiving
+   *      the signal. So if you have a class named ``myapp/menu/MenuComponent.js``
+   *      that receives a signal to toggle the menu, the receiverName should be
+   *      ``myapp.menu.MenuComponent``.
+   * @param callback The callback to call when the signal is sent.
+   *      The callback is called with a single argument - a
+   *      {@link ReceivedSignalInfo} object.
+   */
+  addReceiver(signalName, receiverName, callback) {
+    if(typeof callback === &apos;undefined&apos;) {
+      throw new TypeError(&apos;The callback argument for addReceiver() is required.&apos;);
+    }
+    if(!this._signalMap.has(signalName)) {
+      this._signalMap.set(signalName, new _SignalReceivers(signalName));
+    }
+    if(this._receiverMap.has(receiverName)) {
+      this._receiverMap.get(receiverName).add(signalName);
+    } else {
+      this._receiverMap.set(receiverName, new Set([signalName]));
+    }
+    let signal = this._signalMap.get(signalName);
+    signal.addReceiver(receiverName, callback)
+  }
+
+  /**
+   * Remove a receiver for a signal added with {@link SignalHandlerSingleton#addReceiver}.
+   *
+   * @param {string} signalName The name of the signal.
+   * @param {string} receiverName The name of the receiver.
+   */
+  removeReceiver(signalName, receiverName) {
+    if(this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName);
+      signal.removeReceiver(receiverName);
+      if(signal.receiverCount() == 0) {
+        this._signalMap.delete(signalName);
+      }
+      let receiverSignalSet = this._receiverMap.get(receiverName);
+      if(receiverSignalSet != undefined) {
+        if(receiverSignalSet.has(signalName)) {
+          receiverSignalSet.delete(signalName);
+        }
+        if(receiverSignalSet.size == 0) {
+          this._receiverMap.delete(receiverName);
+        }
+      }
+    }
+  }
+
+  /**
+   * Remove all signals registered for a receiver.
+   *
+   * @param {string} receiverName The name of the receiver.
+   */
+  removeAllSignalsFromReceiver(receiverName) {
+    if(this._receiverMap.has(receiverName)) {
+      for(let signalName of this._receiverMap.get(receiverName)) {
+        this.removeReceiver(signalName, receiverName);
+      }
+    }
+  }
+
+  /**
+   * Check if a signal has a specific receiver.
+   *
+   * @param {string} signalName The name of the signal.
+   * @param {string} receiverName The name of the receiver.
+   */
+  hasReceiver(signalName, receiverName) {
+    if(this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName);
+      return signal.hasReceiver(receiverName);
+    } else {
+      return false;
+    }
+  }
+
+
+  /**
+   * Remove all receivers for a specific signal.
+   *
+   * @param {string} signalName The name of the signal to remove.
+   */
+  clearAllReceiversForSignal(signalName) {
+    if(this._signalMap.has(signalName)) {
+      this._signalMap.delete(signalName);
+    }
+  }
+
+  /**
+   * Send a signal.
+   *
+   * @param {string} signalName The name of the signal to send.
+   * @param data Data to send to the callback of all receivers registered
+   *      for the signal.
+   * @param infoCallback An optional callback that receives information
+   *      about the signal. Useful for debugging what actually received
+   *      the signal. The ``infoCallback`` is called with a single
+   *      argument - a {@link SentSignalInfo} object.
+   */
+  send(signalName, data, infoCallback) {
+    let info = null;
+    if(infoCallback) {
+      info = new SentSignalInfo(signalName);
+    }
+    if(this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName);
+      signal.send(data, info);
+    }
+    if(infoCallback) {
+      infoCallback(info);
+    }
+  }
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
