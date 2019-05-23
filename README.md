@@ -20,7 +20,7 @@ $ yarn add ievv_jsbase
 ## Docs
 
 Read the docs online
-### [Online docs](https://https://appressoas.github.io/ievv_jsbase/)
+### [Online docs](https://appressoas.github.io/ievv_jsbase/)
 
 or build the docs locally
 
