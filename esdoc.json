@@ -1,5 +1,5 @@
 {
-  "destination": "built_docs",
+  "destination": "docs",
   "excludes": [
     "__tests__.+$",
     "__mocks__.+$"
