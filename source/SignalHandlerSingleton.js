@@ -1,13 +1,13 @@
-import makeCustomError from "./makeCustomError";
-import PrettyFormat from "./utils/PrettyFormat";
+import makeCustomError from './makeCustomError'
+import PrettyFormat from './utils/PrettyFormat'
+import LoggerSingleton from './log/LoggerSingleton'
 
 /**
  * Exception raised by {@link HttpCookies#getStrict} when the cookie is not found.
  *
  * @type {Error}
  */
-export let DuplicateReceiverNameForSignal = makeCustomError('DuplicateReceiverNameForSignal');
-
+export let DuplicateReceiverNameForSignal = makeCustomError('DuplicateReceiverNameForSignal')
 
 /**
  * Represents information about the received signal.
@@ -19,25 +19,25 @@ export let DuplicateReceiverNameForSignal = makeCustomError('DuplicateReceiverNa
  * {@link ReceivedSignalInfo.data}.
  */
 export class ReceivedSignalInfo {
-  constructor(data, signalName, receiverName) {
+  constructor (data, signalName, receiverName) {
     /**
      * The data sent by {@link SignalHandlerSingleton#send}.
      */
-    this.data = data;
+    this.data = data
 
     /**
      * The signal name.
      *
      * @type {string}
      */
-    this.signalName = signalName;
+    this.signalName = signalName
 
     /**
      * The receiver name.
      *
      * @type {string}
      */
-    this.receiverName = receiverName;
+    this.receiverName = receiverName
   }
 
   /**
@@ -46,8 +46,8 @@ export class ReceivedSignalInfo {
    *
    * @returns {string}
    */
-  toString() {
-    return `ReceivedSignalInfo: signalName="${this.signalName}" receiverName="${this.receiverName}"`;
+  toString () {
+    return `ReceivedSignalInfo: signalName="${this.signalName}" receiverName="${this.receiverName}"`
   }
 
   /**
@@ -55,8 +55,8 @@ export class ReceivedSignalInfo {
    *
    * @returns {string}
    */
-  getPrettyFormattedData() {
-    return new PrettyFormat(this.data).toString(2);
+  getPrettyFormattedData () {
+    return new PrettyFormat(this.data).toString(2)
   }
 
   /**
@@ -65,21 +65,20 @@ export class ReceivedSignalInfo {
    *
    * @returns {string}
    */
-  toDebugString() {
-    return `${this.toString} data=${this.getPrettyFormattedData()}`;
+  toDebugString () {
+    return `${this.toString} data=${this.getPrettyFormattedData()}`
   }
 }
-
 
 /**
  * Private class used by {@link _SignalReceivers} to represent
  * a single receiver listening for a single signal.
  */
 class _SignalReceiver {
-  constructor(signal, name, callback) {
-    this.signal = signal;
-    this.name = name;
-    this.callback = callback;
+  constructor (signal, name, callback) {
+    this.signal = signal
+    this.name = name
+    this.callback = callback
   }
 
   /**
@@ -87,37 +86,36 @@ class _SignalReceiver {
    * @param data The signal data (the data argument provided for
    *    {@link SignalHandlerSingleton#send}.
    */
-  trigger(data) {
+  trigger (data) {
     setTimeout(() => {
-      this.callback(new ReceivedSignalInfo(data, this.signal.name, this.name));
-    }, 0);
+      this.callback(new ReceivedSignalInfo(data, this.signal.name, this.name))
+    }, 0)
   }
 }
-
 
 /**
  * Object containing debugging information about a sent
  * signal.
  */
 export class SentSignalInfo {
-  constructor(signalName) {
+  constructor (signalName) {
     /**
      * The signal name.
      *
      * @type {string}
      */
-    this.signalName = signalName;
+    this.signalName = signalName
 
     /**
      * Array of triggered receiver names.
      *
      * @type {Array}
      */
-    this.triggeredReceiverNames = [];
+    this.triggeredReceiverNames = []
   }
 
-  _addReceiverName(receiverName) {
-    this.triggeredReceiverNames.push(receiverName);
+  _addReceiverName (receiverName) {
+    this.triggeredReceiverNames.push(receiverName)
   }
 
   /**
@@ -125,24 +123,23 @@ export class SentSignalInfo {
    *
    * @returns {string}
    */
-  toString() {
-    let receivers = this.triggeredReceiverNames.join(', ');
-    if(receivers === '') {
-      receivers = 'NO RECEIVERS';
+  toString () {
+    let receivers = this.triggeredReceiverNames.join(', ')
+    if (receivers === '') {
+      receivers = 'NO RECEIVERS'
     }
-    return `Signal: ${this.signalName} was sent to: ${receivers}`;
+    return `Signal: ${this.signalName} was sent to: ${receivers}`
   }
 }
-
 
 /**
  * Private class used by {@link SignalHandlerSingleton}
  * to represent all receivers for a single signal.
  */
 class _SignalReceivers {
-  constructor(name) {
-    this.name = name;
-    this.receiverMap = new Map();
+  constructor (name) {
+    this.name = name
+    this.receiverMap = new Map()
   }
 
   /**
@@ -150,14 +147,14 @@ class _SignalReceivers {
    *
    * @throw DuplicateReceiverNameForSignal If the receiver is already registered for the signal.
    */
-  addReceiver(receiverName, callback) {
-    if(this.receiverMap.has(receiverName)) {
+  addReceiver (receiverName, callback) {
+    if (this.receiverMap.has(receiverName)) {
       throw new DuplicateReceiverNameForSignal(
-        `The "${receiverName}" receiver is already registered for the "${this.name}" signal`);
+        `The "${receiverName}" receiver is already registered for the "${this.name}" signal`)
     }
     this.receiverMap.set(
       receiverName,
-      new _SignalReceiver(this, receiverName, callback));
+      new _SignalReceiver(this, receiverName, callback))
   }
 
   /**
@@ -166,24 +163,24 @@ class _SignalReceivers {
    * If the receiver is not registered for the signal,
    * nothing happens.
    */
-  removeReceiver(receiverName) {
-    if(this.receiverMap.has(receiverName)) {
-      this.receiverMap.delete(receiverName);
+  removeReceiver (receiverName) {
+    if (this.receiverMap.has(receiverName)) {
+      this.receiverMap.delete(receiverName)
     }
   }
 
   /**
    * Check if we have a specific receiver for this signal.
    */
-  hasReceiver(receiverName) {
-    return this.receiverMap.has(receiverName);
+  hasReceiver (receiverName) {
+    return this.receiverMap.has(receiverName)
   }
 
   /**
    * Get the number of receivers registered for the signal.
    */
-  receiverCount() {
-    return this.receiverMap.size;
+  receiverCount () {
+    return this.receiverMap.size
   }
 
   /**
@@ -194,21 +191,20 @@ class _SignalReceivers {
    * @param {SentSignalInfo} info If this is provided, we add the
    *      name of all receivers the signal was sent to.
    */
-  send(data, info) {
-    for(let receiver of this.receiverMap.values()) {
-      receiver.trigger(data);
-      if(info) {
-        info._addReceiverName(receiver.name);
+  send (data, info) {
+    for (let receiver of this.receiverMap.values()) {
+      receiver.trigger(data)
+      if (info) {
+        info._addReceiverName(receiver.name)
       }
     }
   }
 }
 
-
 /**
  * The instance of the {@link SignalHandlerSingleton}.
  */
-let _instance = null;
+let _instance = null
 
 /**
  * Signal handler singleton for global communication.
@@ -275,13 +271,14 @@ let _instance = null;
  */
 export default class SignalHandlerSingleton {
 
-  constructor() {
-    if(!_instance) {
-      _instance = this;
-      this._signalMap = new Map();
-      this._receiverMap = new Map();
+  constructor () {
+    if (!_instance) {
+      _instance = this
+      this._signalMap = new Map()
+      this._receiverMap = new Map()
+      this._logger = new LoggerSingleton().getLogger('SignalHandlerSingleton')
     }
-    return _instance;
+    return _instance
   }
 
   /**
@@ -290,8 +287,8 @@ export default class SignalHandlerSingleton {
    * Useful for debugging and tests, but should not be
    * used for production code.
    */
-  clearAllReceiversForAllSignals() {
-    this._signalMap.clear();
+  clearAllReceiversForAllSignals () {
+    this._signalMap.clear()
   }
 
   /**
@@ -317,19 +314,20 @@ export default class SignalHandlerSingleton {
    *      The callback is called with a single argument - a
    *      {@link ReceivedSignalInfo} object.
    */
-  addReceiver(signalName, receiverName, callback) {
-    if(typeof callback === 'undefined') {
-      throw new TypeError('The callback argument for addReceiver() is required.');
+  addReceiver (signalName, receiverName, callback) {
+    this._logger.debug(`adding signal ${signalName} for receiver ${receiverName}!`)
+    if (typeof callback === 'undefined') {
+      throw new TypeError('The callback argument for addReceiver() is required.')
     }
-    if(!this._signalMap.has(signalName)) {
-      this._signalMap.set(signalName, new _SignalReceivers(signalName));
+    if (!this._signalMap.has(signalName)) {
+      this._signalMap.set(signalName, new _SignalReceivers(signalName))
     }
-    if(this._receiverMap.has(receiverName)) {
-      this._receiverMap.get(receiverName).add(signalName);
+    if (this._receiverMap.has(receiverName)) {
+      this._receiverMap.get(receiverName).add(signalName)
     } else {
-      this._receiverMap.set(receiverName, new Set([signalName]));
+      this._receiverMap.set(receiverName, new Set([signalName]))
     }
-    let signal = this._signalMap.get(signalName);
+    let signal = this._signalMap.get(signalName)
     signal.addReceiver(receiverName, callback)
   }
 
@@ -339,23 +337,29 @@ export default class SignalHandlerSingleton {
    * @param {string} signalName The name of the signal.
    * @param {string} receiverName The name of the receiver.
    */
-  removeReceiver(signalName, receiverName) {
-    if(this._signalMap.has(signalName)) {
-      let signal = this._signalMap.get(signalName);
-      signal.removeReceiver(receiverName);
-      if(signal.receiverCount() == 0) {
-        this._signalMap.delete(signalName);
+  removeReceiver (signalName, receiverName) {
+    this._logger.debug(`removing signal ${signalName} for receiver ${receiverName}!`)
+    if (this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName)
+      signal.removeReceiver(receiverName)
+      if (signal.receiverCount() == 0) {
+        this._signalMap.delete(signalName)
       }
-      let receiverSignalSet = this._receiverMap.get(receiverName);
-      if(receiverSignalSet != undefined) {
-        if(receiverSignalSet.has(signalName)) {
-          receiverSignalSet.delete(signalName);
+      let receiverSignalSet = this._receiverMap.get(receiverName)
+      if (receiverSignalSet != undefined) {
+        if (receiverSignalSet.has(signalName)) {
+          receiverSignalSet.delete(signalName)
         }
-        if(receiverSignalSet.size == 0) {
-          this._receiverMap.delete(receiverName);
+        if (receiverSignalSet.size == 0) {
+          this._receiverMap.delete(receiverName)
         }
       }
     }
+  }
+
+  replaceReceiver (signalName, receiverName, callback) {
+    this.removeReceiver(signalName, receiverName)
+    this.addReceiver(signalName, receiverName, callback)
   }
 
   /**
@@ -363,10 +367,11 @@ export default class SignalHandlerSingleton {
    *
    * @param {string} receiverName The name of the receiver.
    */
-  removeAllSignalsFromReceiver(receiverName) {
-    if(this._receiverMap.has(receiverName)) {
-      for(let signalName of this._receiverMap.get(receiverName)) {
-        this.removeReceiver(signalName, receiverName);
+  removeAllSignalsFromReceiver (receiverName) {
+    this._logger.debug(`Removing all signals from receiver: ${receiverName}`)
+    if (this._receiverMap.has(receiverName)) {
+      for (let signalName of this._receiverMap.get(receiverName)) {
+        this.removeReceiver(signalName, receiverName)
       }
     }
   }
@@ -377,24 +382,23 @@ export default class SignalHandlerSingleton {
    * @param {string} signalName The name of the signal.
    * @param {string} receiverName The name of the receiver.
    */
-  hasReceiver(signalName, receiverName) {
-    if(this._signalMap.has(signalName)) {
-      let signal = this._signalMap.get(signalName);
-      return signal.hasReceiver(receiverName);
+  hasReceiver (signalName, receiverName) {
+    if (this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName)
+      return signal.hasReceiver(receiverName)
     } else {
-      return false;
+      return false
     }
   }
-
 
   /**
    * Remove all receivers for a specific signal.
    *
    * @param {string} signalName The name of the signal to remove.
    */
-  clearAllReceiversForSignal(signalName) {
-    if(this._signalMap.has(signalName)) {
-      this._signalMap.delete(signalName);
+  clearAllReceiversForSignal (signalName) {
+    if (this._signalMap.has(signalName)) {
+      this._signalMap.delete(signalName)
     }
   }
 
@@ -409,17 +413,17 @@ export default class SignalHandlerSingleton {
    *      the signal. The ``infoCallback`` is called with a single
    *      argument - a {@link SentSignalInfo} object.
    */
-  send(signalName, data, infoCallback) {
-    let info = null;
-    if(infoCallback) {
-      info = new SentSignalInfo(signalName);
+  send (signalName, data, infoCallback) {
+    let info = null
+    if (infoCallback) {
+      info = new SentSignalInfo(signalName)
     }
-    if(this._signalMap.has(signalName)) {
-      let signal = this._signalMap.get(signalName);
-      signal.send(data, info);
+    if (this._signalMap.has(signalName)) {
+      let signal = this._signalMap.get(signalName)
+      signal.send(data, info)
     }
-    if(infoCallback) {
-      infoCallback(info);
+    if (infoCallback) {
+      infoCallback(info)
     }
   }
 }
