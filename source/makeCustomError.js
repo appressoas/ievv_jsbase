@@ -52,8 +52,8 @@
  *      or a custom error created by this function.
  * @returns {Error} The created error class.
  */
-export default function makeCustomError (name, ExtendsError) {
-  ExtendsError = ExtendsError || Error
+export default function makeCustomError (name, ExtendsError = Error) {
+  // ExtendsError = ExtendsError || Error
   let CustomError = function (message, properties) {
     this.message = message
     const parentError = new ExtendsError()
