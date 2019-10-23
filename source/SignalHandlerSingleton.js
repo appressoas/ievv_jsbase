@@ -342,21 +342,29 @@ export default class SignalHandlerSingleton {
     if (this._signalMap.has(signalName)) {
       let signal = this._signalMap.get(signalName)
       signal.removeReceiver(receiverName)
-      if (signal.receiverCount() == 0) {
+      if (signal.receiverCount() === 0) {
         this._signalMap.delete(signalName)
       }
       let receiverSignalSet = this._receiverMap.get(receiverName)
-      if (receiverSignalSet != undefined) {
+      if (receiverSignalSet !== undefined) {
         if (receiverSignalSet.has(signalName)) {
           receiverSignalSet.delete(signalName)
         }
-        if (receiverSignalSet.size == 0) {
+        if (receiverSignalSet.size === 0) {
           this._receiverMap.delete(receiverName)
         }
       }
     }
   }
 
+  /**
+   * Remove the current receiver for the given name, and add the given receiver for the same name.
+   * Just a shortcut for {@link removeReceiver} and {@link addReceiver}.
+   *
+   * @param signalName The name of the signal.
+   * @param receiverName The name of the receiver.
+   * @param callback The callback to run when signal is sent.
+   */
   replaceReceiver (signalName, receiverName, callback) {
     this.removeReceiver(signalName, receiverName)
     this.addReceiver(signalName, receiverName, callback)
