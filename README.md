@@ -19,10 +19,15 @@ $ yarn add ievv_jsbase
 
 ## Docs
 
+Read the docs online
+### [Online docs](https://appressoas.github.io/ievv_jsbase/)
+
+or build the docs locally
+
 1. Clone a local copy of the https://github.com/appressoas/ievv_jsbase git repo.
 2. Run ``npm install`` or ``yarn`` (depending on your preferred package manager)
 3. Run ``npm run build-docs`` or ``yarn run build-docs`` (depending on your preferred package manager)
-4. Open ``built_docs/index.html`` in a browser.
+4. Open ``docs/index.html`` in a browser.
 
 
 ## Release a new version
