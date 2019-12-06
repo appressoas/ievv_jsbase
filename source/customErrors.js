@@ -61,7 +61,7 @@ NotImplementedError.prototype.message = 'Not implemented yet!'
  *     'global': ['Missing required fields name and age.']
  *   })
  * } catch (error) {
- *   if (e instanceof MultiFieldValidationError) {
+ *   if (error instanceof MultiFieldValidationError) {
  *     for (message of e.global) {
  *       console.error(`Global error: ${message}`)
  *     }
