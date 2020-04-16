@@ -23,6 +23,7 @@ class WebpackConfig {
     this._enableBabelCalled = false
     this.pluginsArray = []
     this.moduleRuleArray = []
+    this.resolveAliases = {}
   }
 
   /**
@@ -119,7 +120,8 @@ class WebpackConfig {
       output: this.generateOutputObject(),
       resolve: {
         extensions: ['.js', '.jsx'],
-        modules: ['node_modules']
+        modules: ['node_modules'],
+        alias: this.resolveAliases
       },
       module: this._generateModuleObject(),
       plugins: this.generatePluginsArray()
@@ -197,6 +199,13 @@ class WebpackConfig {
   enableBabel () {
     this.addBabelPolyfill()
     this.addModuleRule(this.generateBabelLoaderModuleRule())
+  }
+
+  addResolveAliases (aliases) {
+    this.resolveAliases = {
+      ...this.resolveAliases,
+      ...aliases
+    }
   }
 }
 
