@@ -3,3 +3,5 @@ node_modules/
 built_docs/
 *.tgz
 docs/
+.vscode/
+.vscode-atest-temp/
