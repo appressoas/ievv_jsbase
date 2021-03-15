@@ -1,0 +1,52 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or this file's README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.134.0/containers/python-3
+{
+	"name": "ievv_jsbase dockerdev",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.
+	"extensions": [
+		// General extensions
+		"eamodio.gitlens",
+		"reduckted.vscode-gitweblinks",
+		"palidino.gitlab-workflow-pali-fork",
+		"VisualStudioExptTeam.vscodeintellicode",
+		
+		// Javascript extensions
+		"christian-kohler.path-intellisense",
+		"mgmcdermott.vscode-language-babel",
+		"chenxsan.vscode-standardjs",
+		"gamunu.vscode-yarn"
+	],
+	
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"typescript.suggest.paths": false, // Required for path-intellisense extension to work
+		"javascript.validate.enable": false  // Required for vscode-standardjs extension to work
+	},
+
+	"mounts": [
+		// Make HOME directory avalable as /host_userhome/
+		"source=${localEnv:HOME}${localEnv:USERPROFILE},target=/host_userhome/,type=bind,consistency=cached",
+		
+		// Mount a persistent directory for yarn, pip and pipenv caches + dbdev_tempdata.
+		// Speeds up builds
+		"source=ievv_jsbase_dockerdev_persistent,destination=/home/codemonkey/persistent/"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		// storybook port as configured with the -p argument in package.json
+		6060
+	],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "bash -ic \"nvm use default; yarn\"",
+
+	// Comment out to connect as root instead.
+	"remoteUser": "codemonkey"
+}
