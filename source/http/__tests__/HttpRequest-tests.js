@@ -1,4 +1,4 @@
-import * as sinon from 'sinon'
+import sinon from "sinon/pkg/sinon-esm.js";
 import HttpRequest from '../HttpRequest'
 
 let server

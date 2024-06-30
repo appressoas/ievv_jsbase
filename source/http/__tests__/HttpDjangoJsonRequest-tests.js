@@ -1,5 +1,5 @@
 import HttpDjangoJsonRequest from '../HttpDjangoJsonRequest'
-import * as sinon from 'sinon'
+import sinon from "sinon/pkg/sinon-esm.js";
 
 let server
 const defaultRequestHeaders = new Set(['Accept', 'Content-Type'])

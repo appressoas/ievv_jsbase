@@ -1,6 +1,6 @@
 import DOMReplaceFromUrl from '../DOMReplaceFromUrl.js'
-import HttpRequest from '../../http/HttpRequest'
-import * as sinon from 'sinon'
+import HttpRequest from '../../http/HttpRequest.js'
+import sinon from "sinon/pkg/sinon-esm.js";
 
 let server
 
