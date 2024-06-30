@@ -9,3 +9,4 @@ esdoc.json
 esdoc/
 *.tgz
 docs/
+.gitignore

@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "htmlparser2": "^3.9.2"
+    "htmlparser2": "^9.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
@@ -16,9 +16,6 @@
   "license": "BSD-3-Clause",
   "name": "ievv_jsbase",
   "scripts": {
-    "build": "babel source --out-dir lib",
-    "build-watch": "babel source --watch --out-dir lib",
-    "build-watch-verbose": "babel source --watch --out-dir lib --verbose",
     "clean": "rm -rf lib built_docs",
     "build-docs": "esdoc -c esdoc.json",
     "test": "jest",
