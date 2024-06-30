@@ -11,6 +11,7 @@ python libraries.
 ## Install
 
 ```bash
+nvm use 20
 npm install ievv_jsbase
 ```
 
@@ -34,6 +35,7 @@ or build the docs locally
 1. Build:
 
    ```bash
+   nvm use 20
    npm run build
    ```
 2. Update the ``version`` in ``package.json``.
