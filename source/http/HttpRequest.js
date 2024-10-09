@@ -1,183 +1,215 @@
-import HttpResponse from './HttpResponse'
-import { UrlParser } from './UrlParser'
-
-
+import HttpResponse from "./HttpResponse";
+import { UrlParser } from "./UrlParser";
 
 class QueuedHttpRequest {
-	constructor ({queue, httprequest, method, data, reject, resolve}) {
-		this.queue = queue;
-		this.uniqueId = Symbol();
-		this.httprequest = httprequest;
-		this.data = data;
-		this.method = method;
-		this._reject = reject;
-		this._resolve = resolve;
-		this.reject = this.reject.bind(this);
-		this.resolve = this.resolve.bind(this);
-		this._retryCount = 0;
-		this._retryTimeout = null;
-		this._cancelled = false;
-	}
+  constructor({ queue, httprequest, method, data, reject, resolve }) {
+    this.queue = queue;
+    this.uniqueId = Symbol();
+    this.httprequest = httprequest;
+    this.data = data;
+    this.method = method;
+    this._reject = reject;
+    this._resolve = resolve;
+    this.reject = this.reject.bind(this);
+    this.resolve = this.resolve.bind(this);
+    this._retryCount = 0;
+    this._retryTimeout = null;
+    this._cancelled = false;
+  }
 
-	cancel() {
-		this._cancelled = true;
-	}
+  cancel() {
+    this._cancelled = true;
+  }
 
-	_removeFromQueue () {
-		this.queue._remove(this.uniqueId);
-	}
+  _removeFromQueue() {
+    this.queue._remove(this.uniqueId);
+  }
 
-	_appendToPendingQueue () {
-		this.queue._addToPendingQueue(this);
-	}
+  _appendToPendingQueue() {
+    this.queue._addToPendingQueue(this);
+  }
 
-	_canRetry (response) {
-		// We retry for these status codes (ref https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses):
-		// - 502 Bad Gateway  (server is most likely temporarily unavailable because of a major update)
-		// - 503 Service Unavailable  (server is most likely temporarily unavailable because of update or overload)
-		// - 504 Gateway Timeout  (normally caused by too much load on the server)
-		// - 0 Server is "gone" (normally just during development, but CAN also happen during major updates of cluster)
-		if (this._retryCount < this.queue._retryTimings.length) {
-			return (
-				response.status === 0 ||
-				response.status === 502 ||
-				response.status === 503 ||
-				response.status === 504
-			)
-		}
-	}
+  _canRetry(response) {
+    if (this._cancelled) {
+      return false;
+    }
+    // We retry for these status codes (ref https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses):
+    // - 502 Bad Gateway  (server is most likely temporarily unavailable because of a major update)
+    // - 503 Service Unavailable  (server is most likely temporarily unavailable because of update or overload)
+    // - 504 Gateway Timeout  (normally caused by too much load on the server)
+    // - 0 Server is "gone" (normally just during development, but CAN also happen during major updates of cluster)
+    if (this._retryCount < this.queue._retryTimings.length) {
+      return (
+        response.status === 0 ||
+        response.status === 502 ||
+        response.status === 503 ||
+        response.status === 504
+      );
+    }
+  }
 
-	_retryDelayMs () {
-		return this.queue._retryTimings[this._retryCount] * 1000;
-	}
+  _retryDelayMs() {
+    const delayMs = this.queue._retryTimings[this._retryCount] * 1000;
+    // +- 0.5 second of random time to spread out the load
+    return delayMs - 500 + Math.floor(Math.random() * 1000);
+  }
 
-	reject (error) {
-		if (this._cancelled) {
-			return;
-		}
-		this._removeFromQueue();
-		if (error.response) {
-			if (this._canRetry(error.response)) {
-				console.debug("CAN RETRY!", error.response.status, "Retrying in ", this._retryDelayMs());
-				this._retryTimeout = window.setTimeout(() => {
-					this._appendToPendingQueue();
-				}, this._retryDelayMs());
-				this._retryCount ++;
-				return;
-			}
-		}
-		this._reject(error)
-	}
+  reject(error) {
+    this._removeFromQueue();
+    if (error.response) {
+      if (this._canRetry(error.response)) {
+        const retryDelay = this._retryDelayMs();
+        console.debug(
+          "Request",
+          this.httprequest._urlParser.buildUrl(),
+          "failed with",
+          error.response.status,
+          "Retrying in ",
+          retryDelay,
+          "ms",
+        );
+        this._retryTimeout = window.setTimeout(() => {
+          this._appendToPendingQueue();
+        }, retryDelay);
+        this._retryCount++;
+        return;
+      }
+    }
+    this._reject(error);
+  }
 
-	resolve (result) {
-		if (this._cancelled) {
-			return;
-		}
-		this._removeFromQueue();
-		this._resolve(result);
-	}
+  resolve(result) {
+    this._removeFromQueue();
+    this._resolve(result);
+  }
 
-	send () {
-		if (this._cancelled) {
-			return;
-		}
-		console.debug("Sending", this.method, this.httprequest._urlParser.buildUrl(), this.httprequest.makeRequestBody(this.data));
-		this.httprequest.request = this.httprequest._makeXMLHttpRequest()
-		this.httprequest.request.open(this.method, this.httprequest.urlParser.buildUrl(), true)
-		this.httprequest.setDefaultRequestHeaders(this.method)
-		this.httprequest._applyRequestHeadersToRequest()
-		this.httprequest._applyTimeoutToRequest(this.reject)
-		this.httprequest._applyRequestFailureManagement(this.reject)
-		this.httprequest.request.onload = () => this.httprequest._onComplete(this.resolve, this.reject)
-		this.httprequest.request.send(this.httprequest.makeRequestBody(this.data))
-	}
+  send() {
+    this.httprequest.request = this.httprequest._makeXMLHttpRequest();
+    this.httprequest.request.open(
+      this.method,
+      this.httprequest.urlParser.buildUrl(),
+      true,
+    );
+    this.httprequest.setDefaultRequestHeaders(this.method);
+    this.httprequest._applyRequestHeadersToRequest();
+    this.httprequest._applyTimeoutToRequest(this.reject);
+    this.httprequest._applyRequestFailureManagement(this.reject);
+    this.httprequest.request.onload = () =>
+      this.httprequest._onComplete(this.resolve, this.reject);
+    this.httprequest.request.send(this.httprequest.makeRequestBody(this.data));
+  }
 }
-
 
 let _instance = null;
 
-
+/**
+ * Http request queue singleton. Used to throttle HTTP requests
+ * so a single client does not perform too many at the same time,
+ * and to retry typical errors that can occur during updates or load
+ * spikes (which autoscaling typically fixes after a minute or two)
+ *
+ * @example <caption>Can be configured as follows</caption>
+ * import { HttpRequestQueueSingleton } from 'ievv_jsbase/lib/http/HttpRequest';
+ * const requestQueueSingleton = new HttpRequestQueueSingleton();
+ * // Set max number of concurrent request:
+ * requestQueueSingleton.setMaxConcurrent(10);  // Defaults to 6
+ * // Set how many retries for status 0, 502, 503 and 504 we perform
+ * // and the delay between them. The length of the array is the number of 
+ * // retries and ``retryTiming[retryAttemptNumber]`` is the delay
+ * // in seconds before we retry each attempt.
+ *  requestQueueSingleton.setRetryTimings([2, 3, 5, 10, 12, 15])  // Defaults to [2, 4, 6, 7, 7, 10, 12, 12, 12, 12, 12];
+ 
+ */
 export class HttpRequestQueueSingleton {
-	/**
-		 * Get an instance of the singleton.
-		 *
-		 * The first time this is called, we create a new instance.
-		 * For all subsequent calls, we return the instance that was
-		 * created on the first call.
-		 */
-	constructor() {
-		if(!_instance) {
-			_instance = this;
-		}
-		this._pendingQueue = new Map();
-		this._runningQueue = new Map();
-		this._maxConcurrent = 6;
-		this._retryTimings = [2, 5, 5, 10, 10, 15, 15, 15];
-		this._currentUrlPath = null;
-		return _instance;
-	}
+  /**
+   * Get an instance of the singleton.
+   *
+   * The first time this is called, we create a new instance.
+   * For all subsequent calls, we return the instance that was
+   * created on the first call.
+   */
+  constructor() {
+    if (!_instance) {
+      _instance = this;
+    }
+    this._pendingQueue = new Map();
+    this._runningQueue = new Map();
+    this._maxConcurrent = 6;
+    this._retryTimings = [2, 4, 6, 7, 7, 10, 12, 12, 12, 12, 12];
+    this._currentUrlPath = null;
+    return _instance;
+  }
 
-	setRetryTimings (retryTimings) {
-		this._retryTimings = retryTimings;
-	}
+  setRetryTimings(retryTimings) {
+    this._retryTimings = retryTimings;
+  }
 
-	setMaxConcurrent (maxConcurrent) {
-		this._maxConcurrent = maxConcurrent;
-	}
+  setMaxConcurrent(maxConcurrent) {
+    this._maxConcurrent = maxConcurrent;
+  }
 
-	_send({httprequest, method, data, reject, resolve}) {
-		const queuedRequest = new QueuedHttpRequest({httprequest, method, data, reject, resolve, queue: this})
-		this._addToPendingQueue(queuedRequest);
-	}
+  _send({ httprequest, method, data, reject, resolve }) {
+    const queuedRequest = new QueuedHttpRequest({
+      httprequest,
+      method,
+      data,
+      reject,
+      resolve,
+      queue: this,
+    });
+    this._addToPendingQueue(queuedRequest);
+  }
 
-	_addToPendingQueue(queuedRequest) {
-		if (window.location.pathname !== this._currentUrlPath) {
-			if (this._currentUrlPath !== null) {
-				this._clear("URL path change detected - clearing/cancelling queued HTTP requests");
-			}
-			this._currentUrlPath = window.location.pathname;
-		}
-		this._pendingQueue.set(queuedRequest.uniqueId, queuedRequest);
-		this._processPendingQueue();
-	}
+  _addToPendingQueue(queuedRequest) {
+    if (window.location.pathname !== this._currentUrlPath) {
+      if (this._currentUrlPath !== null) {
+        this._clear(
+          "URL path change detected - clearing/cancelling queued HTTP requests",
+        );
+      }
+      this._currentUrlPath = window.location.pathname;
+    }
+    this._pendingQueue.set(queuedRequest.uniqueId, queuedRequest);
+    this._processPendingQueue();
+  }
 
-	_clear (logMessage) {
-		if (this._pendingQueue.size === 0 && this._runningQueue.size === 0) {
-			return;
-		}
-		console.info(logMessage);
-		this._pendingQueue = new Map();
-		for (let queuedRequest of this._runningQueue.values()) {
-			queuedRequest.cancel();
-		}
-		this._runningQueue = new Map();
-	}
+  _clear(logMessage) {
+    if (this._pendingQueue.size === 0 && this._runningQueue.size === 0) {
+      return;
+    }
+    console.debug(logMessage);
+    this._pendingQueue = new Map();
+    for (let queuedRequest of this._runningQueue.values()) {
+      queuedRequest.cancel();
+    }
+    this._runningQueue = new Map();
+  }
 
-	_remove (uniqueId) {
-		this._pendingQueue.delete(uniqueId);
-		this._runningQueue.delete(uniqueId);
-		this._processPendingQueue();
-	}
+  _remove(uniqueId) {
+    this._pendingQueue.delete(uniqueId);
+    this._runningQueue.delete(uniqueId);
+    this._processPendingQueue();
+  }
 
-	_processPendingQueue() {
-		if (this._pendingQueue.size === 0) {
-			console.debug("PENDING queue is empty");
-			return;
-		}
-		if (this._runningQueue.size >= this._maxConcurrent) {
-			console.debug("Max concurrency reached", this._runningQueue.size + 1);
-			return;
-		}
-		console.debug(this._runningQueue.size, "Current Pending", Array.from(this._pendingQueue.values()), "Running:", Array.from(this._runningQueue.values()));
-		const nextQueued = this._pendingQueue.values().next().value;
-		console.debug(nextQueued);
-		this._pendingQueue.delete(nextQueued.uniqueId);
-		this._runningQueue.set(nextQueued.uniqueId, nextQueued);
-		nextQueued.send();
-		this._processPendingQueue();
-	}
+  _processPendingQueue() {
+    if (this._pendingQueue.size === 0) {
+      return;
+    }
+    if (this._runningQueue.size >= this._maxConcurrent) {
+      console.debug(
+        `Running HTTP request queue is full (${this._runningQueue.size}) - ` +
+          `deferring further requests until there is space in the queue. ` +
+          `Pending queue size: ${this._pendingQueue.size}.`,
+      );
+      return;
+    }
+    const nextQueued = this._pendingQueue.values().next().value;
+    this._pendingQueue.delete(nextQueued.uniqueId);
+    this._runningQueue.set(nextQueued.uniqueId, nextQueued);
+    nextQueued.send();
+    this._processPendingQueue();
+  }
 }
-
 
 /**
  * API for performing HTTP requests.
@@ -229,16 +261,16 @@ export default class HttpRequest {
    *      If this is supplied, it is passed to
    *      {@link HttpRequest#setUrl}
    */
-  constructor (url) {
-    this._treatRedirectResponseAsError = true
-    this.requestHeaders = new Map()
-    this.request = null
-    this._urlParser = null
-    this._timeoutMs = null
-    if (typeof url !== 'undefined') {
-      this.setUrl(url)
+  constructor(url) {
+    this._treatRedirectResponseAsError = true;
+    this.requestHeaders = new Map();
+    this.request = null;
+    this._urlParser = null;
+    this._timeoutMs = null;
+    if (typeof url !== "undefined") {
+      this.setUrl(url);
     }
-    this._handleTimeout = this._handleTimeout.bind(this)
+    this._handleTimeout = this._handleTimeout.bind(this);
   }
 
   /**
@@ -250,14 +282,14 @@ export default class HttpRequest {
    *
    * @return The copy.
    */
-  deepCopy () {
-    let copy = Object.assign(Object.create(this), this)
-    copy.request = null
+  deepCopy() {
+    let copy = Object.assign(Object.create(this), this);
+    copy.request = null;
     if (this._urlParser !== null) {
-      copy._urlParser = this._urlParser.deepCopy()
+      copy._urlParser = this._urlParser.deepCopy();
     }
-    copy.requestHeaders = new Map(this.requestHeaders)
-    return copy
+    copy.requestHeaders = new Map(this.requestHeaders);
+    return copy;
   }
 
   /**
@@ -265,8 +297,8 @@ export default class HttpRequest {
    *
    * @returns {UrlParser} The UrlParser for the parsed URL.
    */
-  get urlParser () {
-    return this._urlParser
+  get urlParser() {
+    return this._urlParser;
   }
 
   /**
@@ -274,12 +306,12 @@ export default class HttpRequest {
    *
    * @param {String} url The URL.
    */
-  setUrl (url) {
-    this._urlParser = new UrlParser(url)
+  setUrl(url) {
+    this._urlParser = new UrlParser(url);
   }
 
-  setTimeout (timeoutMs) {
-    this._timeoutMs = timeoutMs
+  setTimeout(timeoutMs) {
+    this._timeoutMs = timeoutMs;
   }
 
   /**
@@ -295,35 +327,35 @@ export default class HttpRequest {
    * const request = HttpRequest('http://example.com/api/')
    * request.setTreatRedirectResponseAsError(false)
    */
-  setTreatRedirectResponseAsError (treatRedirectResponseAsError) {
-    this._treatRedirectResponseAsError = treatRedirectResponseAsError
+  setTreatRedirectResponseAsError(treatRedirectResponseAsError) {
+    this._treatRedirectResponseAsError = treatRedirectResponseAsError;
   }
 
-  _makeXMLHttpRequest () {
-    return new window.XMLHttpRequest()
+  _makeXMLHttpRequest() {
+    return new window.XMLHttpRequest();
   }
 
-  _handleTimeout (reject, event) {
-    const response = this.makeResponse(true)
-    reject(response.toError())
+  _handleTimeout(reject, event) {
+    const response = this.makeResponse(true);
+    reject(response.toError());
   }
 
-  _applyTimeoutToRequest (reject) {
+  _applyTimeoutToRequest(reject) {
     if (this._timeoutMs !== null) {
-      this.request.timeout = this._timeoutMs
+      this.request.timeout = this._timeoutMs;
       this.request.ontimeout = (event) => {
-        this._handleTimeout(reject, event)
-      }
+        this._handleTimeout(reject, event);
+      };
     }
   }
 
-  _applyRequestFailureManagement (reject) {
+  _applyRequestFailureManagement(reject) {
     this.request.onreadystatechange = () => {
       if (this.request.readyState === 4 && this.request.status === 0) {
-        const response = this.makeResponse()
-        reject(response.toError())
+        const response = this.makeResponse();
+        reject(response.toError());
       }
-    }
+    };
   }
 
   /**
@@ -343,16 +375,20 @@ export default class HttpRequest {
    *      {@link HttpResponseError} object created using
    *      {@link HttpResponse#toError}.
    */
-  send (method, data) {
-    method = method.toUpperCase()
+  send(method, data) {
+    method = method.toUpperCase();
     if (this._urlParser === null) {
-      throw new TypeError('Can not call send() without an url.')
+      throw new TypeError("Can not call send() without an url.");
     }
     return new Promise((resolve, reject) => {
-			new HttpRequestQueueSingleton()._send({
-				httprequest: this, method, data, reject, resolve
-			})
-    })
+      new HttpRequestQueueSingleton()._send({
+        httprequest: this,
+        method,
+        data,
+        reject,
+        resolve,
+      });
+    });
   }
 
   /**
@@ -360,8 +396,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  get (data) {
-    return this.send('get', data)
+  get(data) {
+    return this.send("get", data);
   }
 
   /**
@@ -369,8 +405,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  head (data) {
-    return this.send('head', data)
+  head(data) {
+    return this.send("head", data);
   }
 
   /**
@@ -378,8 +414,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  post (data) {
-    return this.send('post', data)
+  post(data) {
+    return this.send("post", data);
   }
 
   /**
@@ -387,8 +423,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  put (data) {
-    return this.send('put', data)
+  put(data) {
+    return this.send("put", data);
   }
 
   /**
@@ -396,8 +432,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  patch (data) {
-    return this.send('patch', data)
+  patch(data) {
+    return this.send("patch", data);
   }
 
   /**
@@ -407,8 +443,8 @@ export default class HttpRequest {
    *
    * @see {@link HttpRequest#send}
    */
-  httpdelete (data) {
-    return this.send('delete', data)
+  httpdelete(data) {
+    return this.send("delete", data);
   }
 
   /**
@@ -420,21 +456,21 @@ export default class HttpRequest {
    *
    * Must return a string.
    */
-  makeRequestBody (data) {
-    return data
+  makeRequestBody(data) {
+    return data;
   }
 
   /**
    * Creates a {@link HttpResponse}.
    * @returns {HttpResponse}
    */
-  makeResponse (...extraResponseParams) {
-    return new HttpResponse(this.request, ...extraResponseParams)
+  makeResponse(...extraResponseParams) {
+    return new HttpResponse(this.request, ...extraResponseParams);
   }
 
-  _applyRequestHeadersToRequest () {
+  _applyRequestHeadersToRequest() {
     for (let [header, value] of this.requestHeaders) {
-      this.request.setRequestHeader(header, value)
+      this.request.setRequestHeader(header, value);
     }
   }
 
@@ -444,8 +480,8 @@ export default class HttpRequest {
    * @param header The header name. E.g.: ``"Content-type"``.
    * @param value The header value.
    */
-  setRequestHeader (header, value) {
-    this.requestHeaders.set(header, value)
+  setRequestHeader(header, value) {
+    this.requestHeaders.set(header, value);
   }
 
   /**
@@ -456,20 +492,20 @@ export default class HttpRequest {
    * @param method The HTTP request method (GET, POST, PUT, ...).
    *      Will always be uppercase.
    */
-  setDefaultRequestHeaders (method) {}
+  setDefaultRequestHeaders(method) {}
 
-  _onComplete (resolve, reject) {
-    let response = this.makeResponse()
-    let isSuccess = false
+  _onComplete(resolve, reject) {
+    let response = this.makeResponse();
+    let isSuccess = false;
     if (this._treatRedirectResponseAsError) {
-      isSuccess = response.isSuccess()
+      isSuccess = response.isSuccess();
     } else {
-      isSuccess = response.isSuccess() || response.isRedirect()
+      isSuccess = response.isSuccess() || response.isRedirect();
     }
     if (isSuccess) {
-      resolve(response)
+      resolve(response);
     } else {
-      reject(response.toError())
+      reject(response.toError());
     }
   }
 }
