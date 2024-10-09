@@ -2,7 +2,8 @@
   "dependencies": {
     "@babel/cli": "^7.0.0-beta.47",
     "@babel/polyfill": "^7.0.0-beta.47",
-    "htmlparser2": "^3.9.2"
+    "htmlparser2": "^3.9.2",
+    "immutable": "^3.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
