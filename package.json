@@ -13,6 +13,7 @@
     "esdoc": "^0.4.8",
     "esdoc-importpath-plugin": "^0.0.1",
     "jest": "^22.4.3",
+    "prettier": "^3.3.3",
     "sinon": "^5.0.7",
     "standard": "^11.0.1"
   },
