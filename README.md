@@ -53,7 +53,7 @@ or build the docs locally
 1. Build:
 
    ```
-   $ yarn run build
+   $ npm run build
    ```
 2. Update the ``version`` in ``package.json``.
 3. Git commit the changes. The commit should be ``Release <version>``
